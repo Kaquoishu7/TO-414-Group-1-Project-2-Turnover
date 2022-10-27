@@ -1,0 +1,44 @@
+---
+title: "Project_2"
+author: "Aakash Bharat"
+date: "2022-10-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Employee Turnover
+
+```{r}
+turnover = read.csv("simulated_TECHCO_data.csv")
+str(turnover)
+summary(turnover)
+```
+
+```{r}
+#turnover$turnover = as.factor(turnover$turnover)
+turnover$turnover = ifelse(turnover$turnover == "Stayed", 0, 1)
+turnover$gender = turnover$is_male
+turnover$gender = ifelse(turnover$gender == 1,
+                         "Male", "Female")
+#turnover$is_male = as.factor(turnover$is_male)
+turnover$is_male = NULL
+turnover$emp_id = NULL
+```
+
+```{r}
+linModel = lm(formula = turnover ~ . + gender * similar_language,
+              data = turnover)
+linModel = step(linModel, direction = "backward", trace = 0)
+summary(linModel)
+```
+
+```{r}
+logModel = glm(formula = turnover ~ . + gender * similar_language,
+               data = turnover,
+               family = "binomial")
+logModel = step(logModel, direction = "backward", trace = 0)
+summary(logModel)
+```
