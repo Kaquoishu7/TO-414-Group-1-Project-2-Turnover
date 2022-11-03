@@ -1,8 +1,13 @@
 ---
 title: "Project_2"
-author: "Aakash Bharat"
+author: "Aakash Bharat, Ishan Goel, Doyeon Kim, Raamiz Qureshi, Maegan DeSmet"
 date: "2022-10-27"
-output: html_document
+output:
+  html_document:
+    toc: true
+    theme: united
+    highlight: tango
+    code_folding: show
 ---
 
 ```{r setup, include=FALSE}
@@ -10,6 +15,20 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Employee Turnover
+
+### Summary
+
+We have selected a data set that discusses the simulated employee turnover of company called TECHCO. This data set is both interesting and pertinent to a manager at TECHCO.
+
+#### Why it's Interesting
+
+Firstly, the data set has a lot of data points (over 34,000), so any model we create can be substantially trained. Secondly, the data set has 10 different variables that seem reasonable to consider for employee turnover. For example, knowing the gender, the distance from work, and at least one test score seems like interesting factors to consider. Lastly, the data set is available on Kaggle, so we'll have a way to test our final model in addition to the data we set aside for testing only in our RMD file.
+
+#### Why it's a Business Problem
+
+Employee turnover is an important factor in businesses. Hiring and training new employees in an investment, so if employee turnover is high, that investment begins to turn into a net loss. Retaining employees will allow firms to minimize hiring/training expenses and profit more from their employees' work. Furthermore, the more experience an employee has at the firm, the more valuably they'd be able to contribute; they have expertise and wisdom about working at the firm that new employees will not.
+
+### Logistic Model
 
 ```{r}
 turnover = read.csv("simulated_TECHCO_data.csv")
@@ -26,13 +45,6 @@ turnover$gender = ifelse(turnover$gender == 1,
 #turnover$is_male = as.factor(turnover$is_male)
 turnover$is_male = NULL
 turnover$emp_id = NULL
-```
-
-```{r}
-linModel = lm(formula = turnover ~ . + gender * similar_language,
-              data = turnover)
-linModel = step(linModel, direction = "backward", trace = 0)
-summary(linModel)
 ```
 
 ```{r}
