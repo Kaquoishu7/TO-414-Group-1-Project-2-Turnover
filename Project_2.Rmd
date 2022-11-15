@@ -156,11 +156,21 @@ confusionMatrix(as.factor(logPredictionsDF1$logPredictionsBinary1),
 
 
 ## KNN
+```{r, cache = TRUE}
+library(class)
+library(caret)
+library(ggplot2)
+turnover_knn_model <- knn (train = trainNorm1KNN,
+                    test = testNorm1KNN,
+                      cl = trainNormLabels1, k = 101)
 
-```{r}
-
+summary(turnover_knn_model)
 ```
-
+```{r}
+library(gmodels)
+CrossTable(x = testNormLabels1, y = turnover_knn_model, 
+           prop.chisq=FALSE)
+```
 
 ## ANN
 
