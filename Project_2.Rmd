@@ -84,15 +84,15 @@ testNorm1 = turnover_norm[testIndices1,]
 # Use for KNN
 
 trainNorm1KNN =turnover_norm[-testIndices1,
-                          -match("y",names(turnover_norm))]
+                          -match("turnover",names(turnover_norm))]
 testNorm1KNN =turnover_norm[testIndices1,
-                          -match("y",names(turnover_norm))]
+                          -match("turnover",names(turnover_norm))]
 
-trainRegLabels1 = turnover[-testIndices1,"y"]
-testRegLabels1 = turnover[testIndices1,"y"]
+trainRegLabels1 = turnover[-testIndices1,"turnover"]
+testRegLabels1 = turnover[testIndices1,"turnover"]
 
-trainNormLabels1 = turnover[-testIndices1,"y"]
-testNormLabels1 = turnover[testIndices1, "y"]
+trainNormLabels1 = turnover[-testIndices1,"turnover"]
+testNormLabels1 = turnover[testIndices1, "turnover"]
 
 ```
 
@@ -104,11 +104,21 @@ testNormLabels1 = turnover[testIndices1, "y"]
 
 
 ## KNN
+```{r, cache = TRUE}
+library(class)
+library(caret)
+library(ggplot2)
+turnover_knn_model <- knn (train = trainNorm1KNN,
+                    test = testNorm1KNN,
+                      cl = trainNormLabels1, k = 101)
 
-```{r}
-
+summary(turnover_knn_model)
 ```
-
+```{r}
+library(gmodels)
+CrossTable(x = testNormLabels1, y = turnover_knn_model, 
+           prop.chisq=FALSE)
+```
 
 ## ANN
 
