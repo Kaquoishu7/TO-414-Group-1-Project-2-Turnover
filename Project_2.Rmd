@@ -48,9 +48,85 @@ turnover$emp_id = NULL
 ```
 
 ```{r}
-logModel = glm(formula = turnover ~ . + gender * similar_language,
+logModelInitial =
+  glm(formula = turnover ~ . + gender * similar_language,
                data = turnover,
                family = "binomial")
-logModel = step(logModel, direction = "backward", trace = 0)
-summary(logModel)
+logModelInitial =
+  step(logModelInitial, direction = "backward", trace = 0)
+summary(logModelInitial)
 ```
+# Layer 1 For Stack Model
+
+## Setup
+
+```{r}
+set.seed(0)
+testIndices1 = sample(nrow(turnover), round(nrow(turnover) / 2))
+
+# Use for L, SVM, and DT
+trainReg1 = turnover[-testIndices1,]
+testReg1 = turnover[testIndices1,]
+
+turnover_mm <- as.data.frame(model.matrix(~.-1,turnover))
+
+normalize <- function(x) {
+  return ((x - min(x)) / (max(x) - min(x)))
+}
+
+turnover_norm <- as.data.frame(lapply(turnover_mm, normalize))
+
+# Use for ANN
+
+trainNorm1 = turnover_norm[-testIndices1,]
+testNorm1 = turnover_norm[testIndices1,]
+
+# Use for KNN
+
+trainNorm1KNN =turnover_norm[-testIndices1,
+                          -match("y",names(turnover_norm))]
+testNorm1KNN =turnover_norm[testIndices1,
+                          -match("y",names(turnover_norm))]
+
+trainRegLabels1 = turnover[-testIndices1,"y"]
+testRegLabels1 = turnover[testIndices1,"y"]
+
+trainNormLabels1 = turnover[-testIndices1,"y"]
+testNormLabels1 = turnover[testIndices1, "y"]
+
+```
+
+## Logistic
+
+```{r}
+
+```
+
+
+## KNN
+
+```{r}
+
+```
+
+
+## ANN
+
+```{r}
+
+```
+
+
+## SVM
+
+```{r}
+
+```
+
+
+## DT
+
+```{r}
+
+```
+
