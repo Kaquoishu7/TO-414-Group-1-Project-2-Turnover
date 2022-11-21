@@ -112,7 +112,7 @@ testNormLabels1 = turnover[testIndices1, "y"]
 
 ## ANN
 
-```{r}
+```{r, cache = TRUE}
 
 ```
 
