@@ -58,6 +58,17 @@ summary(logModelInitial)
 ```
 # Layer 1 For Stack Model
 
+## Libraries
+
+```{r}
+library(neuralnet)
+library(class)
+library(caret)
+library(gmodels)
+library(kernlab)
+library(C50)
+```
+
 ## Setup
 
 ```{r}
@@ -67,6 +78,12 @@ testIndices1 = sample(nrow(turnover), round(nrow(turnover) / 2))
 # Use for L, SVM, and DT
 trainReg1 = turnover[-testIndices1,]
 testReg1 = turnover[testIndices1,]
+
+trainRegUS1 = trainReg1
+trainRegUS1$turnover = as.factor(trainRegUS1$turnover)
+
+trainRegUS1 = upSample(trainRegUS1, trainRegUS1$turnover)
+trainRegUS1$turnover = ifelse(trainRegUS1$turnover == "0", 0 , 1)
 
 turnover_mm <- as.data.frame(model.matrix(~.-1,turnover))
 
@@ -84,31 +101,76 @@ testNorm1 = turnover_norm[testIndices1,]
 # Use for KNN
 
 trainNorm1KNN =turnover_norm[-testIndices1,
-                          -match("y",names(turnover_norm))]
+                          -match("turnover",names(turnover_norm))]
 testNorm1KNN =turnover_norm[testIndices1,
-                          -match("y",names(turnover_norm))]
+                          -match("turnover",names(turnover_norm))]
 
-trainRegLabels1 = turnover[-testIndices1,"y"]
-testRegLabels1 = turnover[testIndices1,"y"]
+trainRegLabels1 = turnover[-testIndices1,"turnover"]
+testRegLabels1 = turnover[testIndices1,"turnover"]
 
-trainNormLabels1 = turnover[-testIndices1,"y"]
-testNormLabels1 = turnover[testIndices1, "y"]
+trainNormLabels1 = turnover[-testIndices1,"turnover"]
+testNormLabels1 = turnover[testIndices1, "turnover"]
 
 ```
 
 ## Logistic
 
-```{r}
-
+```{r, cache = TRUE}
+logModel1 = glm(formula = turnover ~ . + gender * .,
+               data = trainReg1,
+               family = "binomial")
+logModel1 =
+  step(logModel1, direction = "backward", trace = 0)
+summary(logModel1)
 ```
+```{r}
+logPredictions1 = predict.glm(logModel1, newdata = testReg1,
+                              type = "response")
+
+# TODO: Tune the threshold
+i = 0
+myMax = 0
+myThreshold = 0
+while (i < 1) {
+  val1 = ifelse(logPredictions1 > i, 1, 0) 
+  val2 = as.data.frame(val1)
+  val3 = confusionMatrix(as.factor(val2$val1),
+                         as.factor(testRegLabels1))
+  if (as.data.frame(val3$overall)$`val3$overall`[2] > myMax) {
+    myMax = as.data.frame(val3$overall)$`val3$overall`[2]
+    myThreshold = i
+  }
+  i = i + 0.001
+}
+```
+```{r}
+logPredictionsBinary1 = ifelse(logPredictions1 > 0.028, 1, 0)
+logPredictionsDF1 = as.data.frame(logPredictionsBinary1)
+CrossTable(x = testRegLabels1,
+           y = logPredictionsDF1$logPredictionsBinary1,
+           prop.chisq = FALSE)
+confusionMatrix(as.factor(logPredictionsDF1$logPredictionsBinary1),
+                as.factor(testRegLabels1))
+```
+
 
 
 ## KNN
+```{r, cache = TRUE}
+library(class)
+library(caret)
+library(ggplot2)
+turnover_knn_model <- knn (train = trainNorm1KNN,
+                    test = testNorm1KNN,
+                      cl = trainNormLabels1, k = 101)
 
-```{r}
-
+summary(turnover_knn_model)
 ```
-
+```{r}
+library(gmodels)
+CrossTable(x = testNormLabels1, y = turnover_knn_model, 
+           prop.chisq=FALSE)
+```
 
 ## ANN
 
@@ -119,7 +181,22 @@ testNormLabels1 = turnover[testIndices1, "y"]
 
 ## SVM
 
-```{r}
+```{r, cache = TRUE}
+ctrl <- trainControl(method = "cv", 
+                        number = 10, 
+                        repeats = 10, 
+                        selectionFunction = "oneSE")
+
+grid <- expand.grid(C = c(0,0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2,5))
+
+set.seed(0)
+ 
+svm_model <- train(turnover ~., data = trainRegUS1, method = "svmLinear",
+                 trControl=ctrl,
+                 preProcess = c("center", "scale"),
+                 tuneGrid = grid,
+                 tuneLength = 10)
+
 
 ```
 
