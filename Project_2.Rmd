@@ -181,7 +181,22 @@ CrossTable(x = testNormLabels1, y = turnover_knn_model,
 
 ## SVM
 
-```{r}
+```{r, cache = TRUE}
+ctrl <- trainControl(method = "cv", 
+                        number = 10, 
+                        repeats = 10, 
+                        selectionFunction = "oneSE")
+
+grid <- expand.grid(C = c(0,0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2,5))
+
+set.seed(0)
+ 
+svm_model <- train(turnover ~., data = trainRegUS1, method = "svmLinear",
+                 trControl=ctrl,
+                 preProcess = c("center", "scale"),
+                 tuneGrid = grid,
+                 tuneLength = 10)
+
 
 ```
 
