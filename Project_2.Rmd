@@ -182,21 +182,26 @@ CrossTable(x = testNormLabels1, y = turnover_knn_model,
 ## SVM
 
 ```{r, cache = TRUE}
-ctrl <- trainControl(method = "cv", 
-                        number = 10, 
-                        repeats = 10, 
+ctrl <- trainControl(method = "cv",
+                        number = 10,
                         selectionFunction = "oneSE")
 
-grid <- expand.grid(C = c(0,0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2,5))
-
 set.seed(0)
- 
-svm_model <- train(turnover ~., data = trainRegUS1, method = "svmLinear",
+
+svm_model <- train(as.factor(turnover) ~., data = trainReg1, method = "svmLinear",
                  trControl=ctrl,
-                 preProcess = c("center", "scale"),
-                 tuneGrid = grid,
+                 preProcess = c("center","scale"),
                  tuneLength = 10)
 
+svm_model
+
+testpred <- predict(svm_model, testReg1)
+testpred
+
+table(testpred, testReg1$turnover)
+
+confusionMatrix(as.factor(testpred),
+                as.factor(testRegLabels1))
 
 ```
 
