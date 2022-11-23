@@ -255,3 +255,42 @@ confusionMatrix(as.factor(dt_predict),
                 as.factor(testRegLabels1))
 ```
 
+# Stack Model
+
+## Combine Predictions
+
+```{r}
+turnover_pred <- data.frame(logPredictionsBinary1, KNNPred, ANNPred, SVMPred, dt_predict, testRegLabels1)
+
+summary(turnover_pred)
+str(turnover_pred)
+```
+
+## Seperate 70:30 test/train
+
+```{r}
+set.seed(12453)
+test_set <- sample(nrow(turnover_pred), round(nrow(turnover_pred) / 10)*3)
+
+turnover_stack_train <- turnover_pred[-test_set,]
+turnover_stack_test <- turnover_pred[test_set, ]
+
+str(turnover_stack_train)
+str(turnover_stack_test)
+```
+
+## Stacked Decision Tree
+
+```{r, cache = TRUE}
+error_cast <- matrix(c(0,1,4,0), nrow=2)
+
+turnover_stack_dt <- C5.0(as.factor(testRegLabels1) ~ ., data = turnover_stack_train, costs = error_cast)
+```
+```{r}
+summary(turnover_stack_dt)
+
+turnover_stack_model <- predict(turnover_stack_dt, turnover_stack_test)
+
+confusionMatrix(as.factor(turnover_stack_model), as.factor(turnover_stack_test$testRegLabels1))
+```
+

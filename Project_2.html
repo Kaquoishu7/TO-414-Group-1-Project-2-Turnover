@@ -554,6 +554,23 @@ Turnover</a>
 <li><a href="#logistic-model" id="toc-logistic-model">Logistic
 Model</a></li>
 </ul></li>
+<li><a href="#layer-1-for-stack-model" id="toc-layer-1-for-stack-model">Layer 1 For Stack Model</a>
+<ul>
+<li><a href="#libraries" id="toc-libraries">Libraries</a></li>
+<li><a href="#setup" id="toc-setup">Setup</a></li>
+<li><a href="#logistic" id="toc-logistic">Logistic</a></li>
+<li><a href="#knn" id="toc-knn">KNN</a></li>
+<li><a href="#ann" id="toc-ann">ANN</a></li>
+<li><a href="#svm" id="toc-svm">SVM</a></li>
+<li><a href="#dt" id="toc-dt">DT</a></li>
+</ul></li>
+<li><a href="#stack-model" id="toc-stack-model">Stack Model</a>
+<ul>
+<li><a href="#combine-predictions" id="toc-combine-predictions">Combine
+Predictions</a></li>
+<li><a href="#seperate-7030-testtrain" id="toc-seperate-7030-testtrain">Seperate 70:30 test/train</a></li>
+<li><a href="#stacked-decision-tree" id="toc-stacked-decision-tree">Stacked Decision Tree</a></li>
+</ul></li>
 </ul>
 </div>
 
@@ -625,19 +642,18 @@ that new employees will not.</p>
 ##  Mean   :0.5678   Mean   : 599.6                     
 ##  3rd Qu.:1.0000   3rd Qu.: 890.0                     
 ##  Max.   :1.0000   Max.   :1191.0</code></pre>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#turnover$turnover = as.factor(turnover$turnover)</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>turnover<span class="sc">$</span>turnover <span class="ot">=</span> <span class="fu">ifelse</span>(turnover<span class="sc">$</span>turnover <span class="sc">==</span> <span class="st">&quot;Stayed&quot;</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>turnover<span class="sc">$</span>gender <span class="ot">=</span> turnover<span class="sc">$</span>is_male</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>turnover<span class="sc">$</span>gender <span class="ot">=</span> <span class="fu">ifelse</span>(turnover<span class="sc">$</span>gender <span class="sc">==</span> <span class="dv">1</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>                         <span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>)</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co">#turnover$is_male = as.factor(turnover$is_male)</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>turnover<span class="sc">$</span>is_male <span class="ot">=</span> <span class="cn">NULL</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>turnover<span class="sc">$</span>emp_id <span class="ot">=</span> <span class="cn">NULL</span></span></code></pre></div>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>logModel <span class="ot">=</span> <span class="fu">glm</span>(<span class="at">formula =</span> turnover <span class="sc">~</span> . <span class="sc">+</span> gender <span class="sc">*</span> similar_language,</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> turnover,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">family =</span> <span class="st">&quot;binomial&quot;</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>logModel <span class="ot">=</span> <span class="fu">step</span>(logModel, <span class="at">direction =</span> <span class="st">&quot;backward&quot;</span>, <span class="at">trace =</span> <span class="dv">0</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(logModel)</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>turnover<span class="sc">$</span>turnover <span class="ot">=</span> <span class="fu">ifelse</span>(turnover<span class="sc">$</span>turnover <span class="sc">==</span> <span class="st">&quot;Stayed&quot;</span>, <span class="dv">0</span>, <span class="dv">1</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>turnover<span class="sc">$</span>gender <span class="ot">=</span> turnover<span class="sc">$</span>is_male</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>turnover<span class="sc">$</span>gender <span class="ot">=</span> <span class="fu">ifelse</span>(turnover<span class="sc">$</span>gender <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;Male&quot;</span>, <span class="st">&quot;Female&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>turnover<span class="sc">$</span>is_male <span class="ot">=</span> <span class="cn">NULL</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>turnover<span class="sc">$</span>emp_id <span class="ot">=</span> <span class="cn">NULL</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>logModelInitial <span class="ot">=</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">glm</span>(<span class="at">formula =</span> turnover <span class="sc">~</span> . <span class="sc">+</span> gender <span class="sc">*</span> similar_language,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> turnover,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">family =</span> <span class="st">&quot;binomial&quot;</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>logModelInitial <span class="ot">=</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step</span>(logModelInitial, <span class="at">direction =</span> <span class="st">&quot;backward&quot;</span>, <span class="at">trace =</span> <span class="dv">0</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(logModelInitial)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## glm(formula = turnover ~ time + training_score + logical_score + 
@@ -669,6 +685,792 @@ that new employees will not.</p>
 ## AIC: 4955.9
 ## 
 ## Number of Fisher Scoring iterations: 7</code></pre>
+</div>
+</div>
+<div id="layer-1-for-stack-model" class="section level1">
+<h1>Layer 1 For Stack Model</h1>
+<div id="libraries" class="section level2">
+<h2>Libraries</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(neuralnet)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(class)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span></code></pre></div>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Loading required package: lattice</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gmodels)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kernlab)</span></code></pre></div>
+<pre><code>## 
+## Attaching package: &#39;kernlab&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     alpha</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(C50)</span></code></pre></div>
+</div>
+<div id="setup" class="section level2">
+<h2>Setup</h2>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">0</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>testIndices1 <span class="ot">=</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(turnover), <span class="fu">round</span>(<span class="fu">nrow</span>(turnover) <span class="sc">/</span> <span class="dv">2</span>))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Use for L, SVM, and DT</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>trainReg1 <span class="ot">=</span> turnover[<span class="sc">-</span>testIndices1,]</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>testReg1 <span class="ot">=</span> turnover[testIndices1,]</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>trainRegUS1 <span class="ot">=</span> trainReg1</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>trainRegUS1<span class="sc">$</span>turnover <span class="ot">=</span> <span class="fu">as.factor</span>(trainRegUS1<span class="sc">$</span>turnover)</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>trainRegUS1 <span class="ot">=</span> <span class="fu">upSample</span>(trainRegUS1, trainRegUS1<span class="sc">$</span>turnover)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>trainRegUS1<span class="sc">$</span>turnover <span class="ot">=</span> <span class="fu">ifelse</span>(trainRegUS1<span class="sc">$</span>turnover <span class="sc">==</span> <span class="st">&quot;0&quot;</span>, <span class="dv">0</span> , <span class="dv">1</span>)</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>trainRegUS1<span class="sc">$</span>Class <span class="ot">=</span> <span class="cn">NULL</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>testRegLabels1 <span class="ot">=</span> turnover[testIndices1,<span class="st">&quot;turnover&quot;</span>]</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Train model variables that are shared</span></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>control <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(<span class="at">method =</span> <span class="st">&quot;cv&quot;</span>, <span class="at">number =</span> <span class="dv">10</span>,</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>                           <span class="at">selectionFunction =</span> <span class="st">&quot;oneSE&quot;</span>)</span></code></pre></div>
+</div>
+<div id="logistic" class="section level2">
+<h2>Logistic</h2>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>logModel1 <span class="ot">=</span> <span class="fu">glm</span>(<span class="at">formula =</span> turnover <span class="sc">~</span> . <span class="sc">+</span> gender <span class="sc">*</span> .,</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>               <span class="at">data =</span> trainReg1,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">family =</span> <span class="st">&quot;binomial&quot;</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>logModel1 <span class="ot">=</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step</span>(logModel1, <span class="at">direction =</span> <span class="st">&quot;backward&quot;</span>, <span class="at">trace =</span> <span class="dv">0</span>)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(logModel1)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = turnover ~ time + training_score + logical_score + 
+##     avg_literacy, family = &quot;binomial&quot;, data = trainReg1)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -0.6021  -0.1709  -0.1378  -0.1138   3.3147  
+## 
+## Coefficients:
+##                 Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)    -0.349157   0.667753  -0.523 0.601055    
+## time            0.022668   0.006318   3.588 0.000333 ***
+## training_score -1.401738   0.106579 -13.152  &lt; 2e-16 ***
+## logical_score   0.050374   0.017489   2.880 0.003973 ** 
+## avg_literacy    0.019709   0.007462   2.641 0.008263 ** 
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 2468.1  on 17225  degrees of freedom
+## Residual deviance: 2313.9  on 17221  degrees of freedom
+## AIC: 2323.9
+## 
+## Number of Fisher Scoring iterations: 7</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>logPredictions1 <span class="ot">=</span> <span class="fu">predict.glm</span>(logModel1, <span class="at">newdata =</span> testReg1,</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                              <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co"># </span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># # </span><span class="al">TODO</span><span class="co">: Tune the threshold</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># i = 0</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># myMax = 0</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co"># myThreshold = 0</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="co"># while (i &lt; 1) {</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="co">#   val1 = ifelse(logPredictions1 &gt; i, 1, 0) </span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="co">#   val2 = as.data.frame(val1)</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co">#   val3 = confusionMatrix(as.factor(val2$val1),</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co">#                          as.factor(testRegLabels1))</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a><span class="co">#   if (as.data.frame(val3$overall)$`val3$overall`[2] &gt; myMax) {</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co">#     myMax = as.data.frame(val3$overall)$`val3$overall`[2]</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="co">#     myThreshold = i</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a><span class="co">#   }</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="co">#   i = i + 0.001</span></span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a><span class="co"># }</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set.seed(300)</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co"># #grid &lt;- expand.grid(.family = &quot;binomial&quot;)</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="co"># grid &lt;- expand.grid(.nIter = 10)</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># logControl &lt;- trainControl(</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="co">#                             method = &quot;cv&quot;,</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co">#                             number = 10,</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co">#                             selectionFunction = &quot;oneSE&quot;)</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a><span class="co"># logModel1 &lt;- train(as.factor(turnover) ~ . + gender * .,</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a><span class="co">#                         method = &quot;LogitBoost&quot;,</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a><span class="co">#                         metric = &quot;Kappa&quot;,</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co">#                         data = trainRegUS1,</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a><span class="co">#                         trControl = logControl,</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a><span class="co">#                         tuneGrid = grid)</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a><span class="co"># logModel1</span></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="co"># logPredictions1 &lt;- predict(logModel1, testReg1)</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>logPredictionsBinary1 <span class="ot">=</span> <span class="fu">ifelse</span>(logPredictions1 <span class="sc">&gt;</span> <span class="fl">0.028</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>logPredictionsDF1 <span class="ot">=</span> <span class="fu">as.data.frame</span>(logPredictionsBinary1)</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">CrossTable</span>(<span class="at">x =</span> testRegLabels1,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> logPredictionsDF1<span class="sc">$</span>logPredictionsBinary1,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.chisq =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<pre><code>## 
+##  
+##    Cell Contents
+## |-------------------------|
+## |                       N |
+## |           N / Row Total |
+## |           N / Col Total |
+## |         N / Table Total |
+## |-------------------------|
+## 
+##  
+## Total Observations in Table:  17226 
+## 
+##  
+##                | logPredictionsDF1$logPredictionsBinary1 
+## testRegLabels1 |         0 |         1 | Row Total | 
+## ---------------|-----------|-----------|-----------|
+##              0 |     15907 |      1058 |     16965 | 
+##                |     0.938 |     0.062 |     0.985 | 
+##                |     0.988 |     0.945 |           | 
+##                |     0.923 |     0.061 |           | 
+## ---------------|-----------|-----------|-----------|
+##              1 |       199 |        62 |       261 | 
+##                |     0.762 |     0.238 |     0.015 | 
+##                |     0.012 |     0.055 |           | 
+##                |     0.012 |     0.004 |           | 
+## ---------------|-----------|-----------|-----------|
+##   Column Total |     16106 |      1120 |     17226 | 
+##                |     0.935 |     0.065 |           | 
+## ---------------|-----------|-----------|-----------|
+## 
+## </code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="fu">as.factor</span>(logPredictionsDF1<span class="sc">$</span>logPredictionsBinary1),</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">as.factor</span>(testRegLabels1))</span></code></pre></div>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction     0     1
+##          0 15907   199
+##          1  1058    62
+##                                          
+##                Accuracy : 0.927          
+##                  95% CI : (0.923, 0.9309)
+##     No Information Rate : 0.9848         
+##     P-Value [Acc &gt; NIR] : 1              
+##                                          
+##                   Kappa : 0.0669         
+##                                          
+##  Mcnemar&#39;s Test P-Value : &lt;2e-16         
+##                                          
+##             Sensitivity : 0.93764        
+##             Specificity : 0.23755        
+##          Pos Pred Value : 0.98764        
+##          Neg Pred Value : 0.05536        
+##              Prevalence : 0.98485        
+##          Detection Rate : 0.92343        
+##    Detection Prevalence : 0.93498        
+##       Balanced Accuracy : 0.58759        
+##                                          
+##        &#39;Positive&#39; Class : 0              
+## </code></pre>
+</div>
+<div id="knn" class="section level2">
+<h2>KNN</h2>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(class)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">300</span>)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">.k =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">15</span>, <span class="dv">25</span>, <span class="dv">99</span>, <span class="dv">131</span>))</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>KNNModel1 <span class="ot">&lt;-</span> <span class="fu">train</span>(<span class="fu">as.factor</span>(turnover) <span class="sc">~</span> .,</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>                        <span class="at">method =</span> <span class="st">&quot;knn&quot;</span>,</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>                        <span class="at">metric =</span> <span class="st">&quot;Kappa&quot;</span>,</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data =</span> trainRegUS1,</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>                        <span class="at">trControl =</span> control,</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>                        <span class="at">tuneGrid =</span> grid)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>KNNModel1</span></code></pre></div>
+<pre><code>## k-Nearest Neighbors 
+## 
+## 33986 samples
+##     9 predictor
+##     2 classes: &#39;0&#39;, &#39;1&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 30588, 30587, 30587, 30588, 30587, 30587, ... 
+## Resampling results across tuning parameters:
+## 
+##   k    Accuracy   Kappa    
+##     1  0.9950568  0.9901137
+##     5  0.9697229  0.9394457
+##    15  0.9111108  0.8222215
+##    25  0.8608549  0.7217095
+##    99  0.7113520  0.4227033
+##   131  0.7005528  0.4011039
+## 
+## Kappa was used to select the optimal model using  the one SE rule.
+## The final value used for the model was k = 1.</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>KNNPred <span class="ot">&lt;-</span> <span class="fu">predict</span>(KNNModel1, testReg1)</span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(KNNPred, testReg1<span class="sc">$</span>turnover)</span></code></pre></div>
+<pre><code>##        
+## KNNPred     0     1
+##       0 16817   255
+##       1   148     6</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">CrossTable</span>(KNNPred, testRegLabels1,</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.chisq =</span> <span class="cn">FALSE</span>, <span class="at">prop.c =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.r =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">dnn =</span> <span class="fu">c</span>(<span class="st">&#39;Predicted Turnover&#39;</span>, <span class="st">&#39;Actual Turnover&#39;</span>))</span></code></pre></div>
+<pre><code>## 
+##  
+##    Cell Contents
+## |-------------------------|
+## |                       N |
+## |         N / Table Total |
+## |-------------------------|
+## 
+##  
+## Total Observations in Table:  17226 
+## 
+##  
+##                    | Actual Turnover 
+## Predicted Turnover |         0 |         1 | Row Total | 
+## -------------------|-----------|-----------|-----------|
+##                  0 |     16817 |       255 |     17072 | 
+##                    |     0.976 |     0.015 |           | 
+## -------------------|-----------|-----------|-----------|
+##                  1 |       148 |         6 |       154 | 
+##                    |     0.009 |     0.000 |           | 
+## -------------------|-----------|-----------|-----------|
+##       Column Total |     16965 |       261 |     17226 | 
+## -------------------|-----------|-----------|-----------|
+## 
+## </code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="fu">as.factor</span>(KNNPred),</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">as.factor</span>(testRegLabels1))</span></code></pre></div>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction     0     1
+##          0 16817   255
+##          1   148     6
+##                                           
+##                Accuracy : 0.9766          
+##                  95% CI : (0.9742, 0.9788)
+##     No Information Rate : 0.9848          
+##     P-Value [Acc &gt; NIR] : 1               
+##                                           
+##                   Kappa : 0.0179          
+##                                           
+##  Mcnemar&#39;s Test P-Value : 1.29e-07        
+##                                           
+##             Sensitivity : 0.99128         
+##             Specificity : 0.02299         
+##          Pos Pred Value : 0.98506         
+##          Neg Pred Value : 0.03896         
+##              Prevalence : 0.98485         
+##          Detection Rate : 0.97626         
+##    Detection Prevalence : 0.99106         
+##       Balanced Accuracy : 0.50713         
+##                                           
+##        &#39;Positive&#39; Class : 0               
+## </code></pre>
+</div>
+<div id="ann" class="section level2">
+<h2>ANN</h2>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">300</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">.size =</span> <span class="dv">3</span>, <span class="at">.decay =</span> <span class="dv">0</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>ANNModel1 <span class="ot">&lt;-</span> <span class="fu">train</span>(<span class="fu">as.factor</span>(turnover) <span class="sc">~</span> .,</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">method =</span> <span class="st">&quot;nnet&quot;</span>,</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">metric =</span> <span class="st">&quot;Kappa&quot;</span>,</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data =</span> trainRegUS1,</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>                        <span class="at">trControl =</span> control,</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>                        <span class="at">tuneGrid =</span> grid)</span></code></pre></div>
+<pre><code>## # weights:  34
+## initial  value 21382.299692 
+## final  value 21201.985963 
+## converged
+## # weights:  34
+## initial  value 21250.291508 
+## iter  10 value 21169.407854
+## iter  20 value 20844.586641
+## iter  30 value 20623.651032
+## iter  40 value 20549.174323
+## iter  50 value 20513.876433
+## iter  60 value 20508.150735
+## final  value 20508.136344 
+## converged
+## # weights:  34
+## initial  value 21209.687859 
+## iter  10 value 21106.315527
+## iter  20 value 20863.313667
+## iter  30 value 20278.708344
+## iter  40 value 19733.593162
+## iter  50 value 19504.738160
+## iter  60 value 18787.420322
+## iter  70 value 17874.889730
+## iter  80 value 17632.238796
+## iter  90 value 17481.336530
+## iter 100 value 17405.843250
+## final  value 17405.843250 
+## stopped after 100 iterations
+## # weights:  34
+## initial  value 22305.799396 
+## iter  10 value 21099.273243
+## iter  20 value 20993.019187
+## iter  30 value 19705.481716
+## iter  40 value 18774.282841
+## iter  50 value 18699.790798
+## iter  60 value 18488.648910
+## iter  70 value 18416.850117
+## iter  80 value 18312.022204
+## iter  90 value 18301.881652
+## iter 100 value 18293.760778
+## final  value 18293.760778 
+## stopped after 100 iterations
+## # weights:  34
+## initial  value 21274.912934 
+## iter  10 value 21082.669554
+## iter  20 value 20719.015119
+## iter  30 value 20106.729719
+## iter  40 value 19614.585622
+## iter  50 value 18675.309203
+## iter  60 value 18244.285785
+## iter  70 value 17894.668886
+## iter  80 value 17733.782773
+## iter  90 value 17691.745313
+## iter 100 value 17687.672869
+## final  value 17687.672869 
+## stopped after 100 iterations
+## # weights:  34
+## initial  value 21655.504087 
+## iter  10 value 21104.915670
+## iter  20 value 19774.382087
+## iter  30 value 18608.650279
+## iter  40 value 18314.412225
+## iter  50 value 18293.352716
+## iter  60 value 18141.634157
+## iter  70 value 18120.850147
+## iter  80 value 18111.206884
+## iter  90 value 18097.886456
+## iter 100 value 18090.028595
+## final  value 18090.028595 
+## stopped after 100 iterations
+## # weights:  34
+## initial  value 22477.491290 
+## iter  10 value 21069.804579
+## iter  20 value 20676.967905
+## iter  30 value 20564.775257
+## iter  40 value 19925.968511
+## iter  50 value 19217.087734
+## iter  60 value 18656.981517
+## iter  70 value 18593.685858
+## iter  80 value 18539.920892
+## iter  90 value 18355.681863
+## iter 100 value 18341.079075
+## final  value 18341.079075 
+## stopped after 100 iterations
+## # weights:  34
+## initial  value 21949.819112 
+## iter  10 value 21097.918051
+## iter  20 value 20943.300300
+## iter  30 value 20920.981061
+## iter  40 value 20909.624316
+## iter  50 value 20902.204306
+## iter  60 value 20900.175735
+## iter  70 value 20899.585582
+## final  value 20899.583327 
+## converged
+## # weights:  34
+## initial  value 21211.276970 
+## iter  10 value 21031.453562
+## iter  20 value 20776.804138
+## iter  30 value 19001.139323
+## iter  40 value 18780.466619
+## iter  50 value 18714.526603
+## iter  60 value 18658.912554
+## iter  70 value 18613.334516
+## iter  80 value 18607.854908
+## iter  90 value 18602.593803
+## iter 100 value 18596.256250
+## final  value 18596.256250 
+## stopped after 100 iterations
+## # weights:  34
+## initial  value 29650.701825 
+## final  value 21201.292795 
+## converged
+## # weights:  34
+## initial  value 23888.793268 
+## iter  10 value 23418.794595
+## iter  20 value 23144.212572
+## iter  30 value 22951.108475
+## iter  40 value 22045.009360
+## iter  50 value 21530.526207
+## iter  60 value 21252.756813
+## iter  70 value 21079.808519
+## iter  80 value 20932.012287
+## iter  90 value 20682.609064
+## iter 100 value 20536.364741
+## final  value 20536.364741 
+## stopped after 100 iterations</code></pre>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>ANNModel1</span></code></pre></div>
+<pre><code>## Neural Network 
+## 
+## 33986 samples
+##     9 predictor
+##     2 classes: &#39;0&#39;, &#39;1&#39; 
+## 
+## No pre-processing
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 30588, 30587, 30587, 30588, 30587, 30587, ... 
+## Resampling results:
+## 
+##   Accuracy   Kappa    
+##   0.6194644  0.2389504
+## 
+## Tuning parameter &#39;size&#39; was held constant at a value of 3
+## Tuning
+##  parameter &#39;decay&#39; was held constant at a value of 0</code></pre>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>ANNPred <span class="ot">&lt;-</span> <span class="fu">predict</span>(ANNModel1, testReg1)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">CrossTable</span>(ANNPred, testRegLabels1,</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.chisq =</span> <span class="cn">FALSE</span>, <span class="at">prop.c =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.r =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">dnn =</span> <span class="fu">c</span>(<span class="st">&#39;Predicted Turnover&#39;</span>, <span class="st">&#39;Actual Turnover&#39;</span>))</span></code></pre></div>
+<pre><code>## 
+##  
+##    Cell Contents
+## |-------------------------|
+## |                       N |
+## |         N / Table Total |
+## |-------------------------|
+## 
+##  
+## Total Observations in Table:  17226 
+## 
+##  
+##                    | Actual Turnover 
+## Predicted Turnover |         0 |         1 | Row Total | 
+## -------------------|-----------|-----------|-----------|
+##                  0 |     13495 |       169 |     13664 | 
+##                    |     0.783 |     0.010 |           | 
+## -------------------|-----------|-----------|-----------|
+##                  1 |      3470 |        92 |      3562 | 
+##                    |     0.201 |     0.005 |           | 
+## -------------------|-----------|-----------|-----------|
+##       Column Total |     16965 |       261 |     17226 | 
+## -------------------|-----------|-----------|-----------|
+## 
+## </code></pre>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="fu">as.factor</span>(ANNPred), <span class="fu">as.factor</span>(testRegLabels1))</span></code></pre></div>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction     0     1
+##          0 13495   169
+##          1  3470    92
+##                                           
+##                Accuracy : 0.7887          
+##                  95% CI : (0.7826, 0.7948)
+##     No Information Rate : 0.9848          
+##     P-Value [Acc &gt; NIR] : 1               
+##                                           
+##                   Kappa : 0.0205          
+##                                           
+##  Mcnemar&#39;s Test P-Value : &lt;2e-16          
+##                                           
+##             Sensitivity : 0.79546         
+##             Specificity : 0.35249         
+##          Pos Pred Value : 0.98763         
+##          Neg Pred Value : 0.02583         
+##              Prevalence : 0.98485         
+##          Detection Rate : 0.78341         
+##    Detection Prevalence : 0.79322         
+##       Balanced Accuracy : 0.57398         
+##                                           
+##        &#39;Positive&#39; Class : 0               
+## </code></pre>
+</div>
+<div id="svm" class="section level2">
+<h2>SVM</h2>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">300</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>svm_model <span class="ot">&lt;-</span> <span class="fu">train</span>(<span class="fu">as.factor</span>(turnover) <span class="sc">~</span>.,</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">data =</span> trainRegUS1, <span class="at">method =</span> <span class="st">&quot;svmLinear&quot;</span>,</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">trControl=</span>control,</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">preProcess =</span> <span class="fu">c</span>(<span class="st">&quot;center&quot;</span>,<span class="st">&quot;scale&quot;</span>),</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">tuneLength =</span> <span class="dv">10</span>)</span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>svm_model</span></code></pre></div>
+<pre><code>## Support Vector Machines with Linear Kernel 
+## 
+## 33986 samples
+##     9 predictor
+##     2 classes: &#39;0&#39;, &#39;1&#39; 
+## 
+## Pre-processing: centered (9), scaled (9) 
+## Resampling: Cross-Validated (10 fold) 
+## Summary of sample sizes: 30588, 30587, 30587, 30588, 30587, 30587, ... 
+## Resampling results:
+## 
+##   Accuracy   Kappa    
+##   0.6791913  0.3583827
+## 
+## Tuning parameter &#39;C&#39; was held constant at a value of 1</code></pre>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>SVMPred <span class="ot">&lt;-</span> <span class="fu">predict</span>(svm_model, testReg1)</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(SVMPred, testReg1<span class="sc">$</span>turnover)</span></code></pre></div>
+<pre><code>##        
+## SVMPred     0     1
+##       0 11356   123
+##       1  5609   138</code></pre>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="fu">as.factor</span>(SVMPred),</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">as.factor</span>(testRegLabels1))</span></code></pre></div>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction     0     1
+##          0 11356   123
+##          1  5609   138
+##                                           
+##                Accuracy : 0.6672          
+##                  95% CI : (0.6602, 0.6743)
+##     No Information Rate : 0.9848          
+##     P-Value [Acc &gt; NIR] : 1               
+##                                           
+##                   Kappa : 0.0175          
+##                                           
+##  Mcnemar&#39;s Test P-Value : &lt;2e-16          
+##                                           
+##             Sensitivity : 0.66938         
+##             Specificity : 0.52874         
+##          Pos Pred Value : 0.98928         
+##          Neg Pred Value : 0.02401         
+##              Prevalence : 0.98485         
+##          Detection Rate : 0.65924         
+##    Detection Prevalence : 0.66638         
+##       Balanced Accuracy : 0.59906         
+##                                           
+##        &#39;Positive&#39; Class : 0               
+## </code></pre>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">CrossTable</span>(SVMPred, testReg1<span class="sc">$</span>turnover,</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.chisq =</span> <span class="cn">FALSE</span>, <span class="at">prop.c =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.r =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">dnn =</span> <span class="fu">c</span>(<span class="st">&#39;Predicted Turnover&#39;</span>, <span class="st">&#39;Actual Turnover&#39;</span>))</span></code></pre></div>
+<pre><code>## 
+##  
+##    Cell Contents
+## |-------------------------|
+## |                       N |
+## |         N / Table Total |
+## |-------------------------|
+## 
+##  
+## Total Observations in Table:  17226 
+## 
+##  
+##                    | Actual Turnover 
+## Predicted Turnover |         0 |         1 | Row Total | 
+## -------------------|-----------|-----------|-----------|
+##                  0 |     11356 |       123 |     11479 | 
+##                    |     0.659 |     0.007 |           | 
+## -------------------|-----------|-----------|-----------|
+##                  1 |      5609 |       138 |      5747 | 
+##                    |     0.326 |     0.008 |           | 
+## -------------------|-----------|-----------|-----------|
+##       Column Total |     16965 |       261 |     17226 | 
+## -------------------|-----------|-----------|-----------|
+## 
+## </code></pre>
+</div>
+<div id="dt" class="section level2">
+<h2>DT</h2>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>dt_model <span class="ot">&lt;-</span> <span class="fu">C5.0</span>(<span class="fu">as.factor</span>(turnover) <span class="sc">~</span> ., <span class="at">data =</span> trainRegUS1)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>dt_predict <span class="ot">&lt;-</span> <span class="fu">predict</span>(dt_model, testReg1)</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">CrossTable</span>(dt_predict, testReg1<span class="sc">$</span>turnover,</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.chisq =</span> <span class="cn">FALSE</span>, <span class="at">prop.c =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.r =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">dnn =</span> <span class="fu">c</span>(<span class="st">&#39;Predicted Turnover&#39;</span>, <span class="st">&#39;Actual Turnover&#39;</span>))</span></code></pre></div>
+<pre><code>## 
+##  
+##    Cell Contents
+## |-------------------------|
+## |                       N |
+## |         N / Table Total |
+## |-------------------------|
+## 
+##  
+## Total Observations in Table:  17226 
+## 
+##  
+##                    | Actual Turnover 
+## Predicted Turnover |         0 |         1 | Row Total | 
+## -------------------|-----------|-----------|-----------|
+##                  0 |     16580 |       229 |     16809 | 
+##                    |     0.962 |     0.013 |           | 
+## -------------------|-----------|-----------|-----------|
+##                  1 |       385 |        32 |       417 | 
+##                    |     0.022 |     0.002 |           | 
+## -------------------|-----------|-----------|-----------|
+##       Column Total |     16965 |       261 |     17226 | 
+## -------------------|-----------|-----------|-----------|
+## 
+## </code></pre>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="fu">as.factor</span>(dt_predict),</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">as.factor</span>(testRegLabels1))</span></code></pre></div>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction     0     1
+##          0 16580   229
+##          1   385    32
+##                                           
+##                Accuracy : 0.9644          
+##                  95% CI : (0.9615, 0.9671)
+##     No Information Rate : 0.9848          
+##     P-Value [Acc &gt; NIR] : 1               
+##                                           
+##                   Kappa : 0.0772          
+##                                           
+##  Mcnemar&#39;s Test P-Value : 3.968e-10       
+##                                           
+##             Sensitivity : 0.97731         
+##             Specificity : 0.12261         
+##          Pos Pred Value : 0.98638         
+##          Neg Pred Value : 0.07674         
+##              Prevalence : 0.98485         
+##          Detection Rate : 0.96250         
+##    Detection Prevalence : 0.97579         
+##       Balanced Accuracy : 0.54996         
+##                                           
+##        &#39;Positive&#39; Class : 0               
+## </code></pre>
+</div>
+</div>
+<div id="stack-model" class="section level1">
+<h1>Stack Model</h1>
+<div id="combine-predictions" class="section level2">
+<h2>Combine Predictions</h2>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>turnover_pred <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(logPredictionsBinary1, KNNPred, ANNPred, SVMPred, dt_predict, testRegLabels1)</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(turnover_pred)</span></code></pre></div>
+<pre><code>##  logPredictionsBinary1 KNNPred   ANNPred   SVMPred   dt_predict
+##  Min.   :0.00000       0:17072   0:13664   0:11479   0:16809   
+##  1st Qu.:0.00000       1:  154   1: 3562   1: 5747   1:  417   
+##  Median :0.00000                                               
+##  Mean   :0.06502                                               
+##  3rd Qu.:0.00000                                               
+##  Max.   :1.00000                                               
+##  testRegLabels1   
+##  Min.   :0.00000  
+##  1st Qu.:0.00000  
+##  Median :0.00000  
+##  Mean   :0.01515  
+##  3rd Qu.:0.00000  
+##  Max.   :1.00000</code></pre>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(turnover_pred)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    17226 obs. of  6 variables:
+##  $ logPredictionsBinary1: num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ KNNPred              : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ ANNPred              : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 2 1 ...
+##  $ SVMPred              : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 2 1 1 2 1 2 1 ...
+##  $ dt_predict           : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ testRegLabels1       : num  0 0 0 0 0 0 0 0 0 0 ...</code></pre>
+</div>
+<div id="seperate-7030-testtrain" class="section level2">
+<h2>Seperate 70:30 test/train</h2>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12453</span>)</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>test_set <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(turnover_pred), <span class="fu">round</span>(<span class="fu">nrow</span>(turnover_pred) <span class="sc">/</span> <span class="dv">10</span>)<span class="sc">*</span><span class="dv">3</span>)</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>turnover_stack_train <span class="ot">&lt;-</span> turnover_pred[<span class="sc">-</span>test_set,]</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>turnover_stack_test <span class="ot">&lt;-</span> turnover_pred[test_set, ]</span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(turnover_stack_train)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    12057 obs. of  6 variables:
+##  $ logPredictionsBinary1: num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ KNNPred              : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ ANNPred              : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 2 1 1 1 1 ...
+##  $ SVMPred              : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 2 1 2 1 1 2 1 ...
+##  $ dt_predict           : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ testRegLabels1       : num  0 0 0 0 0 0 0 0 0 0 ...</code></pre>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(turnover_stack_test)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    5169 obs. of  6 variables:
+##  $ logPredictionsBinary1: num  1 0 0 0 0 0 0 0 0 0 ...
+##  $ KNNPred              : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ ANNPred              : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 1 1 1 1 1 2 1 1 1 ...
+##  $ SVMPred              : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 2 1 2 2 1 1 2 1 1 2 ...
+##  $ dt_predict           : Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ testRegLabels1       : num  0 0 0 0 0 0 0 0 0 0 ...</code></pre>
+</div>
+<div id="stacked-decision-tree" class="section level2">
+<h2>Stacked Decision Tree</h2>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>error_cast <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">4</span>,<span class="dv">0</span>), <span class="at">nrow=</span><span class="dv">2</span>)</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>turnover_stack_dt <span class="ot">&lt;-</span> <span class="fu">C5.0</span>(<span class="fu">as.factor</span>(testRegLabels1) <span class="sc">~</span> ., <span class="at">data =</span> turnover_stack_train, <span class="at">costs =</span> error_cast)</span></code></pre></div>
+<pre><code>## Warning: no dimnames were given for the cost matrix; the factor levels will be
+## used</code></pre>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(turnover_stack_dt)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## C5.0.formula(formula = as.factor(testRegLabels1) ~ ., data
+##  = turnover_stack_train, costs = error_cast)
+## 
+## 
+## C5.0 [Release 2.07 GPL Edition]      Wed Nov 23 16:20:56 2022
+## -------------------------------
+## 
+## Class specified by attribute `outcome&#39;
+## 
+## Read 12057 cases (6 attributes) from undefined.data
+## Read misclassification costs from undefined.costs
+## 
+## Decision tree:
+## 
+## dt_predict = 0: 0 (11773/161)
+## dt_predict = 1:
+## :...logPredictionsBinary1 &lt;= 0: 0 (212/5)
+##     logPredictionsBinary1 &gt; 0: 1 (72/53)
+## 
+## 
+## Evaluation on training data (12057 cases):
+## 
+##         Decision Tree       
+##    -----------------------  
+##    Size      Errors   Cost  
+## 
+##       3  219( 1.8%)   0.06   &lt;&lt;
+## 
+## 
+##     (a)   (b)    &lt;-classified as
+##    ----  ----
+##   11819    53    (a): class 0
+##     166    19    (b): class 1
+## 
+## 
+##  Attribute usage:
+## 
+##  100.00% dt_predict
+##    2.36% logPredictionsBinary1
+## 
+## 
+## Time: 0.0 secs</code></pre>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>turnover_stack_model <span class="ot">&lt;-</span> <span class="fu">predict</span>(turnover_stack_dt, turnover_stack_test)</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="fu">as.factor</span>(turnover_stack_model), <span class="fu">as.factor</span>(turnover_stack_test<span class="sc">$</span>testRegLabels1))</span></code></pre></div>
+<pre><code>## Confusion Matrix and Statistics
+## 
+##           Reference
+## Prediction    0    1
+##          0 5061   71
+##          1   32    5
+##                                           
+##                Accuracy : 0.9801          
+##                  95% CI : (0.9759, 0.9837)
+##     No Information Rate : 0.9853          
+##     P-Value [Acc &gt; NIR] : 0.9987802       
+##                                           
+##                   Kappa : 0.0796          
+##                                           
+##  Mcnemar&#39;s Test P-Value : 0.0001809       
+##                                           
+##             Sensitivity : 0.99372         
+##             Specificity : 0.06579         
+##          Pos Pred Value : 0.98617         
+##          Neg Pred Value : 0.13514         
+##              Prevalence : 0.98530         
+##          Detection Rate : 0.97911         
+##    Detection Prevalence : 0.99284         
+##       Balanced Accuracy : 0.52975         
+##                                           
+##        &#39;Positive&#39; Class : 0               
+## </code></pre>
 </div>
 </div>
 
