@@ -107,25 +107,14 @@ trainNormUS1 = upSample(trainNormUS1, trainNormUS1$turnover)
 trainNormUS1$turnover = ifelse(trainNormUS1$turnover == "0", 0 , 1)
 trainNormUS1$Class = NULL
 
-# Use for KNN
-
-trainNorm1KNN =turnover_norm[-testIndices1,
-                          -match("turnover",names(turnover_norm))]
-testNorm1KNN =turnover_norm[testIndices1,
-                          -match("turnover",names(turnover_norm))]
-# trainNormKNNUS1 = trainNorm1KNN
-# trainNormKNNUS1$turnover = as.factor(trainNormKNNUS1$turnover)
-# 
-# trainNormKNNUS1 = upSample(trainNormKNNUS1,
-#                            trainNormKNNUS1$turnover)
-# trainNormKNNUS1$turnover = ifelse(trainNormKNNUS1$turnover == "0",
-#                                   0 , 1)
-
-#trainRegLabels1 = turnover[-testIndices1,"turnover"]
 testRegLabels1 = turnover[testIndices1,"turnover"]
 
-#trainNormLabels1 = turnover[-testIndices1,"turnover"]
 testNormLabels1 = turnover[testIndices1, "turnover"]
+
+# Train model variables that are shared
+
+control <- trainControl(method = "cv", number = 10,
+                           selectionFunction = "oneSE")
 
 ```
 
@@ -199,20 +188,16 @@ library(ggplot2)
 
 #summary(turnover_knn_model)
 set.seed(300)
-kList = 1:round(sqrt(nrow(trainNorm1KNN)))
-grid <- expand.grid(.k = kList[kList %% 2 == 1])
-KNNControl <- trainControl(
-                            method = "cv",
-                            number = 10,
-                            selectionFunction = "oneSE")
-KNNmodel <- train(as.factor(turnover) ~ .,
+grid <- expand.grid(.k = c(1, 5, 15, 25, 99, 131))
+
+KNNModel1 <- train(as.factor(turnover) ~ .,
                         method = "knn",
                         metric = "Kappa",
-                        data = testReg1,
-                        trControl = KNNControl,
+                        data = trainRegUS1,
+                        trControl = control,
                         tuneGrid = grid)
-KNNmodel
-KNNpred <- predict(KNNmodel, testReg1)
+KNNModel1
+KNNPred <- predict(KNNModel1, testReg1)
 #KNNpred
 ```
 
@@ -220,9 +205,14 @@ KNNpred <- predict(KNNmodel, testReg1)
 library(gmodels)
 #CrossTable(x = testNormLabels1, y = turnover_knn_model, 
 #           prop.chisq=FALSE)
-table(KNNpred, testReg1$turnover)
+table(KNNPred, testReg1$turnover)
 
-confusionMatrix(as.factor(KNNpred),
+CrossTable(KNNPred, testReg1$turnover,
+           prop.chisq = FALSE, prop.c = FALSE,
+           prop.r = FALSE,
+           dnn = c('Predicted Turnover', 'Actual Turnover'))
+
+confusionMatrix(as.factor(KNNPred),
                 as.factor(testRegLabels1))
 ```
 
@@ -236,41 +226,47 @@ confusionMatrix(as.factor(KNNpred),
 ## SVM
 
 ```{r, cache = TRUE}
-ctrl <- trainControl(method = "cv",
-                        number = 10,
-                        selectionFunction = "oneSE")
+set.seed(300)
 
-set.seed(0)
-
-svm_model <- train(as.factor(turnover) ~., data = trainReg1, method = "svmLinear",
-                 trControl=ctrl,
-                 preProcess = c("center","scale"),
-                 tuneLength = 10)
+svm_model <- train(as.factor(turnover) ~.,
+                   data = trainRegUS1, method = "svmLinear",
+                   trControl=control,
+                   preProcess = c("center","scale"),
+                   tuneLength = 10)
 
 svm_model
 
-testpred <- predict(svm_model, testReg1)
-testpred
+```
+```{r}
+SVMPred <- predict(svm_model, testReg1)
+```
+```{r}
+table(SVMPred, testReg1$turnover)
 
-table(testpred, testReg1$turnover)
-
-confusionMatrix(as.factor(testpred),
+confusionMatrix(as.factor(SVMPred),
                 as.factor(testRegLabels1))
 
+CrossTable(SVMPred, testReg1$turnover,
+           prop.chisq = FALSE, prop.c = FALSE,
+           prop.r = FALSE,
+           dnn = c('Predicted Turnover', 'Actual Turnover'))
 ```
 
 
 ## DT
 
 ```{r, cache = TRUE}
-#prop.table(table(trainNormUS1$turnover))
-#prop.table(table(testNorm1$turnover))
+
 dt_model <- C5.0(as.factor(turnover) ~ ., data = trainRegUS1)
 dt_predict <- predict(dt_model, testReg1)
-plot(dt_model, subtree = 1)
-library(gmodels)
-CrossTable(testReg1$turnover, dt_predict,
-           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,dnn = c('Actual Turnover', 'Predicted Turnover'))
+```
+```{r}
 
+CrossTable(dt_predict, testReg1$turnover,
+           prop.chisq = FALSE, prop.c = FALSE,
+           prop.r = FALSE,
+           dnn = c('Predicted Turnover', 'Actual Turnover'))
+confusionMatrix(as.factor(dt_predict),
+                as.factor(testRegLabels1))
 ```
 
