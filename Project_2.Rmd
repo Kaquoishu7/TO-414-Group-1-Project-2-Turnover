@@ -261,6 +261,14 @@ confusionMatrix(as.factor(testpred),
 ## DT
 
 ```{r}
+prop.table(table(trainNorm1$turnover))
+prop.table(table(testNorm1$turnover))
+dt_model <- C5.0(as.factor(turnover) ~ ., data = trainNorm1)
+dt_predict <- predict(dt_model, testNorm1)
+plot(dt_model, subtree = 1)
+library(gmodels)
+CrossTable(testNorm1$turnover, dt_predict,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,dnn = c('Actual Turnover', 'Predicted Turnover'))
 
 ```
 
