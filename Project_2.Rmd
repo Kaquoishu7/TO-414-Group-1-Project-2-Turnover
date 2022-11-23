@@ -160,16 +160,36 @@ confusionMatrix(as.factor(logPredictionsDF1$logPredictionsBinary1),
 library(class)
 library(caret)
 library(ggplot2)
-turnover_knn_model <- knn (train = trainNorm1KNN,
-                    test = testNorm1KNN,
-                      cl = trainNormLabels1, k = 101)
+#turnover_knn_model <- knn (train = trainNorm1KNN,
+#                    test = testNorm1KNN,
+#                      cl = trainNormLabels1, k = 101)
 
-summary(turnover_knn_model)
+#summary(turnover_knn_model)
+set.seed(300)
+grid <- expand.grid(k = c(1,5,9,10,15,20,25))
+KNNControl <- trainControl(
+                            method = "cv",
+                            number = 10,
+                            selectionFunction = "oneSE",
+                            repeats = 10)
+KNNmodel <- train(as.factor(turnover) ~.,
+                        method = "knn",
+                        metric = "Kappa",
+                        data = testReg1,
+                        trControl = KNNControl,
+                        tuneGrid = grid)
+KNNmodel
+KNNpred <- predict(KNNmodel, testReg1)
+KNNpred
 ```
 ```{r}
 library(gmodels)
-CrossTable(x = testNormLabels1, y = turnover_knn_model, 
-           prop.chisq=FALSE)
+#CrossTable(x = testNormLabels1, y = turnover_knn_model, 
+#           prop.chisq=FALSE)
+table(KNNpred, testReg1$turnover)
+
+confusionMatrix(as.factor(KNNpred),
+                as.factor(testRegLabels1))
 ```
 
 ## ANN
