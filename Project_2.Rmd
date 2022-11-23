@@ -95,8 +95,15 @@ turnover_norm <- as.data.frame(lapply(turnover_mm, normalize))
 
 # Use for ANN
 
-trainNorm1 = turnover_norm[-testIndices1,]
-testNorm1 = turnover_norm[testIndices1,]
+# Use for L, SVM, and DT
+trainNorm1 = turnover[-testIndices1,]
+testNorm1 = turnover[testIndices1,]
+
+trainNormUS1 = trainNorm1
+trainNormUS1$turnover = as.factor(trainNormUS1$turnover)
+
+trainNormUS1 = upSample(trainNormUS1, trainNormUS1$turnover)
+trainNormUS1$turnover = ifelse(trainNormUS1$turnover == "0", 0 , 1)
 
 # Use for KNN
 
@@ -104,11 +111,18 @@ trainNorm1KNN =turnover_norm[-testIndices1,
                           -match("turnover",names(turnover_norm))]
 testNorm1KNN =turnover_norm[testIndices1,
                           -match("turnover",names(turnover_norm))]
+# trainNormKNNUS1 = trainNorm1KNN
+# trainNormKNNUS1$turnover = as.factor(trainNormKNNUS1$turnover)
+# 
+# trainNormKNNUS1 = upSample(trainNormKNNUS1,
+#                            trainNormKNNUS1$turnover)
+# trainNormKNNUS1$turnover = ifelse(trainNormKNNUS1$turnover == "0",
+#                                   0 , 1)
 
-trainRegLabels1 = turnover[-testIndices1,"turnover"]
+#trainRegLabels1 = turnover[-testIndices1,"turnover"]
 testRegLabels1 = turnover[testIndices1,"turnover"]
 
-trainNormLabels1 = turnover[-testIndices1,"turnover"]
+#trainNormLabels1 = turnover[-testIndices1,"turnover"]
 testNormLabels1 = turnover[testIndices1, "turnover"]
 
 ```
