@@ -160,16 +160,36 @@ confusionMatrix(as.factor(logPredictionsDF1$logPredictionsBinary1),
 library(class)
 library(caret)
 library(ggplot2)
-turnover_knn_model <- knn (train = trainNorm1KNN,
-                    test = testNorm1KNN,
-                      cl = trainNormLabels1, k = 101)
+#turnover_knn_model <- knn (train = trainNorm1KNN,
+#                    test = testNorm1KNN,
+#                      cl = trainNormLabels1, k = 101)
 
-summary(turnover_knn_model)
+#summary(turnover_knn_model)
+set.seed(300)
+grid <- expand.grid(k = c(1,5,9,10,15,20,25))
+KNNControl <- trainControl(
+                            method = "cv",
+                            number = 10,
+                            selectionFunction = "oneSE",
+                            repeats = 10)
+KNNmodel <- train(as.factor(turnover) ~.,
+                        method = "knn",
+                        metric = "Kappa",
+                        data = testReg1,
+                        trControl = KNNControl,
+                        tuneGrid = grid)
+KNNmodel
+KNNpred <- predict(KNNmodel, testReg1)
+KNNpred
 ```
 ```{r}
 library(gmodels)
-CrossTable(x = testNormLabels1, y = turnover_knn_model, 
-           prop.chisq=FALSE)
+#CrossTable(x = testNormLabels1, y = turnover_knn_model, 
+#           prop.chisq=FALSE)
+table(KNNpred, testReg1$turnover)
+
+confusionMatrix(as.factor(KNNpred),
+                as.factor(testRegLabels1))
 ```
 
 ## ANN
@@ -182,21 +202,26 @@ CrossTable(x = testNormLabels1, y = turnover_knn_model,
 ## SVM
 
 ```{r, cache = TRUE}
-ctrl <- trainControl(method = "cv", 
-                        number = 10, 
-                        repeats = 10, 
+ctrl <- trainControl(method = "cv",
+                        number = 10,
                         selectionFunction = "oneSE")
 
-grid <- expand.grid(C = c(0,0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2,5))
-
 set.seed(0)
- 
-svm_model <- train(turnover ~., data = trainRegUS1, method = "svmLinear",
+
+svm_model <- train(as.factor(turnover) ~., data = trainReg1, method = "svmLinear",
                  trControl=ctrl,
-                 preProcess = c("center", "scale"),
-                 tuneGrid = grid,
+                 preProcess = c("center","scale"),
                  tuneLength = 10)
 
+svm_model
+
+testpred <- predict(svm_model, testReg1)
+testpred
+
+table(testpred, testReg1$turnover)
+
+confusionMatrix(as.factor(testpred),
+                as.factor(testRegLabels1))
 
 ```
 
@@ -204,6 +229,14 @@ svm_model <- train(turnover ~., data = trainRegUS1, method = "svmLinear",
 ## DT
 
 ```{r}
+prop.table(table(trainNorm1$turnover))
+prop.table(table(testNorm1$turnover))
+dt_model <- C5.0(as.factor(turnover) ~ ., data = trainNorm1)
+dt_predict <- predict(dt_model, testNorm1)
+plot(dt_model, subtree = 1)
+library(gmodels)
+CrossTable(testNorm1$turnover, dt_predict,
+           prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,dnn = c('Actual Turnover', 'Predicted Turnover'))
 
 ```
 
