@@ -158,6 +158,23 @@ while (i < 1) {
 }
 ```
 ```{r}
+# set.seed(300)
+# #kList = 1:round(sqrt(nrow(trainNorm1KNN)))
+# grid <- expand.grid(.family = "binomial")
+# logControl <- trainControl(
+#                             method = "cv",
+#                             number = 10,
+#                             selectionFunction = "oneSE")
+# logModel1 <- train(as.factor(turnover) ~ . + gender * .,
+#                         method = "glm",
+#                         metric = "Kappa",
+#                         data = testReg1,
+#                         trControl = logControl,
+#                         tuneGrid = grid)
+# logModel1
+# logPredictions1 <- predict(logModel1, testReg1)
+```
+```{r}
 logPredictionsBinary1 = ifelse(logPredictions1 > 0.028, 1, 0)
 logPredictionsDF1 = as.data.frame(logPredictionsBinary1)
 CrossTable(x = testRegLabels1,
@@ -180,13 +197,13 @@ library(ggplot2)
 
 #summary(turnover_knn_model)
 set.seed(300)
-grid <- expand.grid(k = c(1,5,9,10,15,20,25))
+kList = 1:round(sqrt(nrow(trainNorm1KNN)))
+grid <- expand.grid(.k = kList[kList %% 2 == 1])
 KNNControl <- trainControl(
                             method = "cv",
                             number = 10,
-                            selectionFunction = "oneSE",
-                            repeats = 10)
-KNNmodel <- train(as.factor(turnover) ~.,
+                            selectionFunction = "oneSE")
+KNNmodel <- train(as.factor(turnover) ~ .,
                         method = "knn",
                         metric = "Kappa",
                         data = testReg1,
@@ -194,8 +211,9 @@ KNNmodel <- train(as.factor(turnover) ~.,
                         tuneGrid = grid)
 KNNmodel
 KNNpred <- predict(KNNmodel, testReg1)
-KNNpred
+#KNNpred
 ```
+
 ```{r}
 library(gmodels)
 #CrossTable(x = testNormLabels1, y = turnover_knn_model, 
