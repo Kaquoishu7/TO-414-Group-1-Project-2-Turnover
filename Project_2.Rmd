@@ -196,8 +196,18 @@ confusionMatrix(as.factor(KNNpred),
 
 ```{r, cache = TRUE}
 
+turnover_ann = neuralnet(turnover ~ ., trainNorm1, hidden = 3)
+
 ```
 
+```{r}
+turnover_ann_model = predict(turnover_ann, newdata=testNorm1, type = "response")
+
+turnover_ann_model = ifelse(turnover_ann_model > 0.5, 1, 0)
+
+confusionMatrix(as.factor(turnover_ann_model), as.factor(testNormLabels1))
+
+```
 
 ## SVM
 
