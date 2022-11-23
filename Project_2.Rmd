@@ -131,35 +131,35 @@ summary(logModel1)
 ```{r}
 logPredictions1 = predict.glm(logModel1, newdata = testReg1,
                               type = "response")
-
-# TODO: Tune the threshold
-i = 0
-myMax = 0
-myThreshold = 0
-while (i < 1) {
-  val1 = ifelse(logPredictions1 > i, 1, 0) 
-  val2 = as.data.frame(val1)
-  val3 = confusionMatrix(as.factor(val2$val1),
-                         as.factor(testRegLabels1))
-  if (as.data.frame(val3$overall)$`val3$overall`[2] > myMax) {
-    myMax = as.data.frame(val3$overall)$`val3$overall`[2]
-    myThreshold = i
-  }
-  i = i + 0.001
-}
+# 
+# # TODO: Tune the threshold
+# i = 0
+# myMax = 0
+# myThreshold = 0
+# while (i < 1) {
+#   val1 = ifelse(logPredictions1 > i, 1, 0) 
+#   val2 = as.data.frame(val1)
+#   val3 = confusionMatrix(as.factor(val2$val1),
+#                          as.factor(testRegLabels1))
+#   if (as.data.frame(val3$overall)$`val3$overall`[2] > myMax) {
+#     myMax = as.data.frame(val3$overall)$`val3$overall`[2]
+#     myThreshold = i
+#   }
+#   i = i + 0.001
+# }
 ```
 ```{r}
 # set.seed(300)
-# #kList = 1:round(sqrt(nrow(trainNorm1KNN)))
-# grid <- expand.grid(.family = "binomial")
+# #grid <- expand.grid(.family = "binomial")
+# grid <- expand.grid(.nIter = 10)
 # logControl <- trainControl(
 #                             method = "cv",
 #                             number = 10,
 #                             selectionFunction = "oneSE")
 # logModel1 <- train(as.factor(turnover) ~ . + gender * .,
-#                         method = "glm",
+#                         method = "LogitBoost",
 #                         metric = "Kappa",
-#                         data = testReg1,
+#                         data = trainRegUS1,
 #                         trControl = logControl,
 #                         tuneGrid = grid)
 # logModel1
