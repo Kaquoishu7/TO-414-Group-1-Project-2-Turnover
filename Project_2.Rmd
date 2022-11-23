@@ -37,12 +37,9 @@ summary(turnover)
 ```
 
 ```{r}
-#turnover$turnover = as.factor(turnover$turnover)
 turnover$turnover = ifelse(turnover$turnover == "Stayed", 0, 1)
 turnover$gender = turnover$is_male
-turnover$gender = ifelse(turnover$gender == 1,
-                         "Male", "Female")
-#turnover$is_male = as.factor(turnover$is_male)
+turnover$gender = ifelse(turnover$gender == 1, "Male", "Female")
 turnover$is_male = NULL
 turnover$emp_id = NULL
 ```
@@ -86,30 +83,7 @@ trainRegUS1 = upSample(trainRegUS1, trainRegUS1$turnover)
 trainRegUS1$turnover = ifelse(trainRegUS1$turnover == "0", 0 , 1)
 trainRegUS1$Class = NULL
 
-turnover_mm <- as.data.frame(model.matrix(~.-1,turnover))
-
-normalize <- function(x) {
-  return ((x - min(x)) / (max(x) - min(x)))
-}
-
-turnover_norm <- as.data.frame(lapply(turnover_mm, normalize))
-
-# Use for ANN
-
-# Use for L, SVM, and DT
-trainNorm1 = turnover[-testIndices1,]
-testNorm1 = turnover[testIndices1,]
-
-trainNormUS1 = trainNorm1
-trainNormUS1$turnover = as.factor(trainNormUS1$turnover)
-
-trainNormUS1 = upSample(trainNormUS1, trainNormUS1$turnover)
-trainNormUS1$turnover = ifelse(trainNormUS1$turnover == "0", 0 , 1)
-trainNormUS1$Class = NULL
-
 testRegLabels1 = turnover[testIndices1,"turnover"]
-
-testNormLabels1 = turnover[testIndices1, "turnover"]
 
 # Train model variables that are shared
 
@@ -182,11 +156,7 @@ confusionMatrix(as.factor(logPredictionsDF1$logPredictionsBinary1),
 library(class)
 library(caret)
 library(ggplot2)
-#turnover_knn_model <- knn (train = trainNorm1KNN,
-#                    test = testNorm1KNN,
-#                      cl = trainNormLabels1, k = 101)
 
-#summary(turnover_knn_model)
 set.seed(300)
 grid <- expand.grid(.k = c(1, 5, 15, 25, 99, 131))
 
@@ -198,16 +168,12 @@ KNNModel1 <- train(as.factor(turnover) ~ .,
                         tuneGrid = grid)
 KNNModel1
 KNNPred <- predict(KNNModel1, testReg1)
-#KNNpred
 ```
 
 ```{r}
-library(gmodels)
-#CrossTable(x = testNormLabels1, y = turnover_knn_model, 
-#           prop.chisq=FALSE)
 table(KNNPred, testReg1$turnover)
 
-CrossTable(KNNPred, testReg1$turnover,
+CrossTable(KNNPred, testRegLabels1,
            prop.chisq = FALSE, prop.c = FALSE,
            prop.r = FALSE,
            dnn = c('Predicted Turnover', 'Actual Turnover'))
@@ -220,17 +186,26 @@ confusionMatrix(as.factor(KNNPred),
 
 ```{r, cache = TRUE}
 
-turnover_ann = neuralnet(turnover ~ ., trainNorm1, hidden = 3)
+set.seed(300)
+grid <- expand.grid(.size = 3, .decay = 0)
+
+ANNModel1 <- train(as.factor(turnover) ~ .,
+                        method = "nnet",
+                        metric = "Kappa",
+                        data = trainRegUS1,
+                        trControl = control,
+                        tuneGrid = grid)
+ANNModel1
+ANNPred <- predict(ANNModel1, testReg1)
 
 ```
 
 ```{r}
-turnover_ann_model = predict(turnover_ann, newdata=testNorm1, type = "response")
-
-turnover_ann_model = ifelse(turnover_ann_model > 0.5, 1, 0)
-
-confusionMatrix(as.factor(turnover_ann_model), as.factor(testNormLabels1))
-
+CrossTable(ANNPred, testRegLabels1,
+           prop.chisq = FALSE, prop.c = FALSE,
+           prop.r = FALSE,
+           dnn = c('Predicted Turnover', 'Actual Turnover'))
+confusionMatrix(as.factor(ANNPred), as.factor(testRegLabels1))
 ```
 
 ## SVM
