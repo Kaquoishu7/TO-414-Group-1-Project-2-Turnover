@@ -84,6 +84,7 @@ trainRegUS1$turnover = as.factor(trainRegUS1$turnover)
 
 trainRegUS1 = upSample(trainRegUS1, trainRegUS1$turnover)
 trainRegUS1$turnover = ifelse(trainRegUS1$turnover == "0", 0 , 1)
+trainRegUS1$Class = NULL
 
 turnover_mm <- as.data.frame(model.matrix(~.-1,turnover))
 
@@ -104,6 +105,7 @@ trainNormUS1$turnover = as.factor(trainNormUS1$turnover)
 
 trainNormUS1 = upSample(trainNormUS1, trainNormUS1$turnover)
 trainNormUS1$turnover = ifelse(trainNormUS1$turnover == "0", 0 , 1)
+trainNormUS1$Class = NULL
 
 # Use for KNN
 
@@ -260,14 +262,14 @@ confusionMatrix(as.factor(testpred),
 
 ## DT
 
-```{r}
-prop.table(table(trainNorm1$turnover))
-prop.table(table(testNorm1$turnover))
-dt_model <- C5.0(as.factor(turnover) ~ ., data = trainNorm1)
-dt_predict <- predict(dt_model, testNorm1)
+```{r, cache = TRUE}
+#prop.table(table(trainNormUS1$turnover))
+#prop.table(table(testNorm1$turnover))
+dt_model <- C5.0(as.factor(turnover) ~ ., data = trainRegUS1)
+dt_predict <- predict(dt_model, testReg1)
 plot(dt_model, subtree = 1)
 library(gmodels)
-CrossTable(testNorm1$turnover, dt_predict,
+CrossTable(testReg1$turnover, dt_predict,
            prop.chisq = FALSE, prop.c = FALSE, prop.r = FALSE,dnn = c('Actual Turnover', 'Predicted Turnover'))
 
 ```
