@@ -284,13 +284,22 @@ str(turnover_stack_test)
 ```{r, cache = TRUE}
 error_cast <- matrix(c(0,1,4,0), nrow=2)
 
-turnover_stack_dt <- C5.0(as.factor(testRegLabels1) ~ ., data = turnover_stack_train, costs = error_cast)
+turnover_stack_dt <- C5.0(as.factor(testRegLabels1) ~ .,
+                          data = turnover_stack_train,
+                          costs = error_cast)
 ```
 ```{r}
 summary(turnover_stack_dt)
 
 turnover_stack_model <- predict(turnover_stack_dt, turnover_stack_test)
 
-confusionMatrix(as.factor(turnover_stack_model), as.factor(turnover_stack_test$testRegLabels1))
+
+CrossTable(turnover_stack_model,
+           turnover_stack_test$testRegLabels1,
+           prop.chisq = FALSE, prop.c = FALSE,
+           prop.r = FALSE,
+           dnn = c('Predicted Turnover', 'Actual Turnover'))
+confusionMatrix(as.factor(turnover_stack_model),
+                as.factor(turnover_stack_test$testRegLabels1))
 ```
 

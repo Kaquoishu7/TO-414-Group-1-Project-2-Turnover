@@ -1393,7 +1393,9 @@ that new employees will not.</p>
 <h2>Stacked Decision Tree</h2>
 <div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>error_cast <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">4</span>,<span class="dv">0</span>), <span class="at">nrow=</span><span class="dv">2</span>)</span>
 <span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>turnover_stack_dt <span class="ot">&lt;-</span> <span class="fu">C5.0</span>(<span class="fu">as.factor</span>(testRegLabels1) <span class="sc">~</span> ., <span class="at">data =</span> turnover_stack_train, <span class="at">costs =</span> error_cast)</span></code></pre></div>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>turnover_stack_dt <span class="ot">&lt;-</span> <span class="fu">C5.0</span>(<span class="fu">as.factor</span>(testRegLabels1) <span class="sc">~</span> .,</span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">data =</span> turnover_stack_train,</span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>                          <span class="at">costs =</span> error_cast)</span></code></pre></div>
 <pre><code>## Warning: no dimnames were given for the cost matrix; the factor levels will be
 ## used</code></pre>
 <div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(turnover_stack_dt)</span></code></pre></div>
@@ -1403,7 +1405,7 @@ that new employees will not.</p>
 ##  = turnover_stack_train, costs = error_cast)
 ## 
 ## 
-## C5.0 [Release 2.07 GPL Edition]      Wed Nov 23 16:20:56 2022
+## C5.0 [Release 2.07 GPL Edition]      Wed Nov 23 21:56:00 2022
 ## -------------------------------
 ## 
 ## Class specified by attribute `outcome&#39;
@@ -1443,7 +1445,39 @@ that new employees will not.</p>
 ## Time: 0.0 secs</code></pre>
 <div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>turnover_stack_model <span class="ot">&lt;-</span> <span class="fu">predict</span>(turnover_stack_dt, turnover_stack_test)</span>
 <span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="fu">as.factor</span>(turnover_stack_model), <span class="fu">as.factor</span>(turnover_stack_test<span class="sc">$</span>testRegLabels1))</span></code></pre></div>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a><span class="fu">CrossTable</span>(turnover_stack_model,</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>           turnover_stack_test<span class="sc">$</span>testRegLabels1,</span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.chisq =</span> <span class="cn">FALSE</span>, <span class="at">prop.c =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">prop.r =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a>           <span class="at">dnn =</span> <span class="fu">c</span>(<span class="st">&#39;Predicted Turnover&#39;</span>, <span class="st">&#39;Actual Turnover&#39;</span>))</span></code></pre></div>
+<pre><code>## 
+##  
+##    Cell Contents
+## |-------------------------|
+## |                       N |
+## |         N / Table Total |
+## |-------------------------|
+## 
+##  
+## Total Observations in Table:  5169 
+## 
+##  
+##                    | Actual Turnover 
+## Predicted Turnover |         0 |         1 | Row Total | 
+## -------------------|-----------|-----------|-----------|
+##                  0 |      5061 |        71 |      5132 | 
+##                    |     0.979 |     0.014 |           | 
+## -------------------|-----------|-----------|-----------|
+##                  1 |        32 |         5 |        37 | 
+##                    |     0.006 |     0.001 |           | 
+## -------------------|-----------|-----------|-----------|
+##       Column Total |      5093 |        76 |      5169 | 
+## -------------------|-----------|-----------|-----------|
+## 
+## </code></pre>
+<div class="sourceCode" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">confusionMatrix</span>(<span class="fu">as.factor</span>(turnover_stack_model),</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>                <span class="fu">as.factor</span>(turnover_stack_test<span class="sc">$</span>testRegLabels1))</span></code></pre></div>
 <pre><code>## Confusion Matrix and Statistics
 ## 
 ##           Reference
