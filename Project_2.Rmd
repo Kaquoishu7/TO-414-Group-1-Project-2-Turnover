@@ -92,6 +92,18 @@ control <- trainControl(method = "cv", number = 10,
 
 ```
 
+```{r}
+turnoverUS = turnover
+turnoverUS$turnover = as.factor(turnoverUS$turnover)
+
+turnoverUS = upSample(turnoverUS, turnoverUS$turnover)
+turnoverUS$turnover = ifelse(turnoverUS$turnover == "0", 0 , 1)
+turnoverUS$Class = NULL
+
+turnoverUS_labels <- turnoverUS$turnover
+```
+
+
 ## Logistic
 
 ```{r, cache = TRUE}
@@ -213,47 +225,31 @@ confusionMatrix(as.factor(ANNPred), as.factor(testRegLabels1))
 ```{r, cache = TRUE}
 set.seed(300)
 
-svm_model <- train(as.factor(turnover) ~.,
-                   data = trainRegUS1, method = "svmLinear",
-                   trControl=control,
-                   preProcess = c("center","scale"),
-                   tuneLength = 10)
-
-svm_model
-
-```
-```{r}
-SVMPred <- predict(svm_model, testReg1)
-```
-```{r}
-table(SVMPred, testReg1$turnover)
-
-confusionMatrix(as.factor(SVMPred),
-                as.factor(testRegLabels1))
-
-CrossTable(SVMPred, testReg1$turnover,
-           prop.chisq = FALSE, prop.c = FALSE,
-           prop.r = FALSE,
-           dnn = c('Predicted Turnover', 'Actual Turnover'))
-```
-
-
-```{r}
-control <- trainControl(method = "cv", 
-                        number = 10, 
-                        selectionFunction = "oneSE")
-
 grid <- expand.grid(sigma = c(.01, 0.10, .015, 0.2),
                     C = c(0.75, 0.9, 1, 1.1, 1.25))
 
 svm_model <- train(as.factor(turnover) ~.,
-                   data = trainRegUS1, method = "svmRadial",
-                  preProcess = c("center","scale"), 
+                  data = turnoverUS, method = "svmRadial",
+                #  preProcess = c("center","scale"), 
                   tuneGrid = grid, 
                   trControl= control)
 
 svm_model
 
+```
+
+```{r}
+SVMPred <- predict(svm_model, turnoverUS)
+
+table(SVMPred, turnoverUS$turnover)
+
+confusionMatrix(as.factor(SVMPred),
+                as.factor(turnoverUS_labels))
+
+CrossTable(SVMPred, turnoverUS$turnover,
+           prop.chisq = FALSE, prop.c = FALSE,
+           prop.r = FALSE,
+           dnn = c('Predicted Turnover', 'Actual Turnover'))
 ```
 
 
