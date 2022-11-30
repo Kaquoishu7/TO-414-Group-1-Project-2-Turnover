@@ -238,6 +238,25 @@ CrossTable(SVMPred, testReg1$turnover,
 ```
 
 
+```{r}
+control <- trainControl(method = "cv", 
+                        number = 10, 
+                        selectionFunction = "oneSE")
+
+grid <- expand.grid(sigma = c(.01, 0.10, .015, 0.2),
+                    C = c(0.75, 0.9, 1, 1.1, 1.25))
+
+svm_model <- train(as.factor(turnover) ~.,
+                   data = trainRegUS1, method = "svmRadial",
+                  preProcess = c("center","scale"), 
+                  tuneGrid = grid, 
+                  trControl= control)
+
+svm_model
+
+```
+
+
 ## DT
 
 ```{r, cache = TRUE}
