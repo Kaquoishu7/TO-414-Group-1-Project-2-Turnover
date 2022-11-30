@@ -230,7 +230,6 @@ grid <- expand.grid(sigma = c(.01, 0.10, .015, 0.2),
 
 svm_model <- train(as.factor(turnover) ~.,
                   data = turnoverUS, method = "svmRadial",
-                #  preProcess = c("center","scale"), 
                   tuneGrid = grid, 
                   trControl= control)
 
