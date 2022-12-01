@@ -172,26 +172,27 @@ library(ggplot2)
 set.seed(300)
 grid <- expand.grid(.k = c(1, 5, 15, 25, 99, 131))
 
-KNNModel1 <- train(as.factor(turnover) ~ .,
+KNNModel <- train(as.factor(turnover) ~ .,
                         method = "knn",
                         metric = "Kappa",
-                        data = trainRegUS1,
+                        data = turnoverUS,
+                        preProcess = c("center", "scale"),
                         trControl = control,
                         tuneGrid = grid)
-KNNModel1
-KNNPred <- predict(KNNModel1, testReg1)
+KNNModel
 ```
 
 ```{r}
-table(KNNPred, testReg1$turnover)
+KNNPred <- predict(KNNModel, turnoverUS)
+table(KNNPred, turnoverUS$turnover)
 
-CrossTable(KNNPred, testRegLabels1,
+confusionMatrix(as.factor(KNNPred),
+                as.factor(turnoverUS_labels))
+
+CrossTable(KNNPred, turnoverUS$turnover,
            prop.chisq = FALSE, prop.c = FALSE,
            prop.r = FALSE,
            dnn = c('Predicted Turnover', 'Actual Turnover'))
-
-confusionMatrix(as.factor(KNNPred),
-                as.factor(testRegLabels1))
 ```
 
 ## ANN
