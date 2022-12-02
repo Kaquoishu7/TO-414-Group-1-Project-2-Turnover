@@ -170,22 +170,23 @@ set.seed(300)
 grid <- expand.grid(.size = 3, .decay = 0)
 
 ANNModel1 <- train(as.factor(turnover) ~ .,
-                        method = "nnet",
-                        metric = "Kappa",
-                        data = trainRegUS1,
-                        trControl = control,
-                        tuneGrid = grid)
+                   method = "nnet",
+                   metric = "Kappa",
+                   data = turnoverUS,
+                   trControl = control,
+                   tuneGrid = grid,
+                   preProcess = c("center", "scale"))
 ANNModel1
-ANNPred <- predict(ANNModel1, testReg1)
+ANNPred <- predict(ANNModel1, turnover)
 
 ```
 
 ```{r}
-CrossTable(ANNPred, testRegLabels1,
+CrossTable(ANNPred, turnoverTestLabels,
            prop.chisq = FALSE, prop.c = FALSE,
            prop.r = FALSE,
            dnn = c('Predicted Turnover', 'Actual Turnover'))
-confusionMatrix(as.factor(ANNPred), as.factor(testRegLabels1))
+confusionMatrix(as.factor(ANNPred), as.factor(turnoverTestLabels))
 ```
 
 ## SVM
@@ -206,14 +207,14 @@ svm_model
 ```
 
 ```{r}
-SVMPred <- predict(svm_model, turnoverUS)
+SVMPred <- predict(svm_model, turnover)
 
-table(SVMPred, turnoverUS$turnover)
+table(SVMPred, turnoverTestLabels)
 
 confusionMatrix(as.factor(SVMPred),
-                as.factor(turnoverUS_labels))
+                as.factor(turnoverTestLabels))
 
-CrossTable(SVMPred, turnoverUS$turnover,
+CrossTable(SVMPred, turnoverTestLabels,
            prop.chisq = FALSE, prop.c = FALSE,
            prop.r = FALSE,
            dnn = c('Predicted Turnover', 'Actual Turnover'))
@@ -224,17 +225,17 @@ CrossTable(SVMPred, turnoverUS$turnover,
 
 ```{r, cache = TRUE}
 
-dt_model <- C5.0(as.factor(turnover) ~ ., data = trainRegUS1)
-dt_predict <- predict(dt_model, testReg1)
+dt_model <- C5.0(as.factor(turnover) ~ ., data = turnoverUS)
+dt_predict <- predict(dt_model, turnover)
 ```
 ```{r}
 
-CrossTable(dt_predict, testReg1$turnover,
+CrossTable(dt_predict, turnoverTestLabels,
            prop.chisq = FALSE, prop.c = FALSE,
            prop.r = FALSE,
            dnn = c('Predicted Turnover', 'Actual Turnover'))
 confusionMatrix(as.factor(dt_predict),
-                as.factor(testRegLabels1))
+                as.factor(turnoverTestLabels))
 ```
 
 # Stack Model
