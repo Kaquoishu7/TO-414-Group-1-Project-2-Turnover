@@ -224,8 +224,16 @@ CrossTable(SVMPred, turnoverTestLabels,
 ## DT
 
 ```{r, cache = TRUE}
+set.seed(300)
 
-dt_model <- C5.0(as.factor(turnover) ~ ., data = turnoverUS)
+grid <- expand.grid(.model = "tree",
+                    .trials = c(1, 5, 10, 15, 20, 25, 30, 35),
+                    .winnow = "FALSE")
+
+dt_model <- train(as.factor(turnover) ~.,
+                  data = turnoverUS, method = "C5.0",
+                  tuneGrid = grid, 
+                  trControl= control)
 dt_predict <- predict(dt_model, turnover)
 ```
 ```{r}
