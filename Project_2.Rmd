@@ -45,13 +45,13 @@ turnover$emp_id = NULL
 ```
 
 ```{r}
-logModelInitial =
-  glm(formula = turnover ~ . + gender * similar_language,
-               data = turnover,
-               family = "binomial")
-logModelInitial =
-  step(logModelInitial, direction = "backward", trace = 0)
-summary(logModelInitial)
+#logModelInitial =
+#  glm(formula = turnover ~ . + gender * similar_language,
+#               data = turnover,
+#               family = "binomial")
+#logModelInitial =
+#  step(logModelInitial, direction = "backward", trace = 0)
+#summary(logModelInitial)
 ```
 # Layer 1 For Stack Model
 
@@ -69,27 +69,9 @@ library(C50)
 ## Setup
 
 ```{r}
-set.seed(0)
-testIndices1 = sample(nrow(turnover), round(nrow(turnover) / 2))
-
-# Use for L, SVM, and DT
-trainReg1 = turnover[-testIndices1,]
-testReg1 = turnover[testIndices1,]
-
-trainRegUS1 = trainReg1
-trainRegUS1$turnover = as.factor(trainRegUS1$turnover)
-
-trainRegUS1 = upSample(trainRegUS1, trainRegUS1$turnover)
-trainRegUS1$turnover = ifelse(trainRegUS1$turnover == "0", 0 , 1)
-trainRegUS1$Class = NULL
-
-testRegLabels1 = turnover[testIndices1,"turnover"]
-
 # Train model variables that are shared
-
 control <- trainControl(method = "cv", number = 10,
                            selectionFunction = "oneSE")
-
 ```
 
 ```{r}
@@ -116,14 +98,15 @@ logModel1 <- train(as.factor(turnover) ~ . + gender * .,
                         family = "binomial")
 logModel1
 logPredictions1 <- predict(logModel1, newdata = turnover, type = "prob")
-summary(logPredictions1$`1`)
+#logPredictions1 <- predict(logModel1, newdata = turnover)
+summary(logPredictions1)
 
 pred2 <- ifelse(logPredictions1$`1` >= 0.6, 1, 0)
-table(pred2)
-
+#table(pred2)
 ```
 ```{r}
 
+<<<<<<< HEAD
 # CrossTable(logPredictions1,
 #            turnoverTestLabels,
 #            prop.chisq = FALSE, prop.c = FALSE,
@@ -131,12 +114,21 @@ table(pred2)
 #            dnn = c('Predicted Turnover', 'Actual Turnover'))
 # confusionMatrix(as.factor(logPredictions1),
 #                 as.factor(turnoverTestLabels))
+=======
+CrossTable(x = pred2,
+           y = turnoverTestLabels,
+           prop.chisq = FALSE, prop.c = FALSE,
+           prop.r = FALSE,
+           dnn = c('Predicted Turnover', 'Actual Turnover'))
+#confusionMatrix(as.factor(logPredictions1),
+#                as.factor(turnoverTestLabels))
+>>>>>>> c2d443fe418fe0fb639a707b21a6fff7cb0a3013
 
 confusionMatrix(as.factor(pred2),
-                as.factor(turnoverTestLabels), positive = "1")
+               as.factor(turnoverTestLabels), positive = "1")
 
-length(pred2)
-nrow(turnover)
+#length(pred2)
+#nrow(turnover)
 ```
 
 
@@ -319,7 +311,7 @@ We built five individual models to try and predict employee turnover using the s
 For the logistic model, we used cross-validation with the `train()` function. We were specifically interested in how gender affects all the other variables, so we included that interaction term. Overall, the logistic model has an accuracy of  92.7% and a Kappa of 0.0669. The model also skews heavily toward negatives.
 
 ### KNN Model 
-For the KNN model, we used cross-validation with the train() function. Overall, the KNN model has an accuracy of 96% and a Kappa of 46.97%. The model is skewed toward false negatives. 
+For the KNN model, we used cross-validation with the train() function. Overall, the KNN model with k= 5 has an accuracy of 96% and a Kappa of 0.9541. The model resulted in 1066 false positives, but 0 false negatives, showing that the model is skewed toward false positives. 
 
 ### ANN Model
 For the ANN model, we once again used a 10-fold cross-validation with the train() function. When run on our data, the model had 79% accuracy with a 0.0205 Kappa. The kappa here was much worse than any of our other models. The accuracy was not the worst, but we had numerous models with over 90% accuracy that would be preferred to use over this. The model had 1% false negatives and 20% false positives. This model was, similar to the logistic model, skewed towards false positives.
