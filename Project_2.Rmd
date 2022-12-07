@@ -102,15 +102,6 @@ turnoverUS$Class = NULL
 
 turnoverTestLabels = turnover$turnover
 
-str(turnoverUS)
-cor(turnoverUS$distance, turnoverUS$turnover)
-cor(turnoverUS$training_score, turnoverUS$turnover)
-cor(turnoverUS$logical_score, turnoverUS$turnover)
-cor(turnoverUS$avg_literacy, turnoverUS$turnover)
-cor(turnoverUS$location_age, turnoverUS$turnover)
-cor(turnoverUS$similar_language, turnoverUS$turnover)
-cor(turnoverUS$time, turnoverUS$turnover)
-
 ```
 
 
@@ -257,11 +248,6 @@ dt_model <- train(as.factor(turnover) ~.,
 dt_predict <- predict(dt_model, turnover)
 
 
-simpledt <- C5.0(as.factor(turnover) ~.,
-                  data = turnoverUS)
-
-simple_predict <- predict(simpledt, turnover)
-
 ```
 ```{r}
 
@@ -272,8 +258,6 @@ CrossTable(dt_predict, turnoverTestLabels,
 confusionMatrix(as.factor(dt_predict),
                 as.factor(turnoverTestLabels))
 
-confusionMatrix(as.factor(simple_predict),
-                as.factor(turnoverTestLabels))
 ```
 
 # Stack Model
