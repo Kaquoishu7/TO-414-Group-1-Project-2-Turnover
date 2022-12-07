@@ -124,8 +124,8 @@ table(pred2)
 ```
 ```{r}
 
-CrossTable(x = logPredictions1,
-           y = turnoverTestLabels,
+CrossTable(logPredictions1,
+           turnoverTestLabels,
            prop.chisq = FALSE, prop.c = FALSE,
            prop.r = FALSE,
            dnn = c('Predicted Turnover', 'Actual Turnover'))
