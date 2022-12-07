@@ -135,11 +135,6 @@ CrossTable(x = logPredictions1,
            dnn = c('Predicted Turnover', 'Actual Turnover'))
 confusionMatrix(as.factor(logPredictions1),
                 as.factor(turnoverTestLabels))
-
-confusionMatrix(as.factor(pred2),
-                as.factor(turnoverTestLabels), positive = "1")
-length(pred2)
-nrow(turnover)
 ```
 
 
@@ -241,12 +236,6 @@ CrossTable(SVMPred, turnoverTestLabels,
 
 dt_model <- C5.0(as.factor(turnover) ~ ., data = turnoverUS)
 dt_predict <- predict(dt_model, turnover)
-
-
-simpledt <- C5.0(as.factor(turnover) ~.,
-                  data = turnoverUS)
-simple_predict <- predict(simpledt, turnover)
-
 ```
 ```{r}
 
@@ -256,9 +245,6 @@ CrossTable(dt_predict, turnoverTestLabels,
            dnn = c('Predicted Turnover', 'Actual Turnover'))
 confusionMatrix(as.factor(dt_predict),
                 as.factor(turnoverTestLabels))
-
-confusionMatrix(as.factor(simple_predict),
-                as.factor(turnoverTestLabels))
 ```
 
 # Stack Model
@@ -266,7 +252,7 @@ confusionMatrix(as.factor(simple_predict),
 ## Combine Predictions
 
 ```{r}
-turnover_pred <- data.frame(logPredictionsBinary1, KNNPred, ANNPred, SVMPred, dt_predict, turnoverTestLabels)
+turnover_pred <- data.frame(logPredictionsBinary1, KNNPred, ANNPred, SVMPred, dt_predict, testRegLabels1)
 
 summary(turnover_pred)
 str(turnover_pred)
@@ -290,7 +276,7 @@ str(turnover_stack_test)
 ```{r, cache = TRUE}
 error_cast <- matrix(c(0,1,4,0), nrow=2)
 
-turnover_stack_dt <- C5.0(as.factor(turnoverTestLabels) ~ .,
+turnover_stack_dt <- C5.0(as.factor(testRegLabels1) ~ .,
                           data = turnover_stack_train,
                           costs = error_cast)
 ```
@@ -301,11 +287,11 @@ turnover_stack_model <- predict(turnover_stack_dt, turnover_stack_test)
 
 
 CrossTable(turnover_stack_model,
-           turnover_stack_test$turnoverTestLabels,
+           turnover_stack_test$testRegLabels1,
            prop.chisq = FALSE, prop.c = FALSE,
            prop.r = FALSE,
            dnn = c('Predicted Turnover', 'Actual Turnover'))
 confusionMatrix(as.factor(turnover_stack_model),
-                as.factor(turnover_stack_test$turnoverTestLabels))
+                as.factor(turnover_stack_test$testRegLabels1))
 ```
 
