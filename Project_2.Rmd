@@ -124,7 +124,12 @@ logModel1 <- train(as.factor(turnover) ~ . + gender * .,
                         trControl = control,
                         family = "binomial")
 logModel1
-logPredictions1 <- predict(logModel1, turnover)
+logPredictions1 <- predict(logModel1, newdata = turnover, type = "prob")
+summary(logPredictions1$`1`)
+
+pred2 <- ifelse(logPredictions1$`1` >= 0.6, 1, 0)
+table(pred2)
+
 ```
 ```{r}
 
@@ -135,6 +140,12 @@ CrossTable(x = logPredictions1,
            dnn = c('Predicted Turnover', 'Actual Turnover'))
 confusionMatrix(as.factor(logPredictions1),
                 as.factor(turnoverTestLabels))
+
+confusionMatrix(as.factor(pred2),
+                as.factor(turnoverTestLabels), positive = "1")
+
+length(pred2)
+nrow(turnover)
 ```
 
 
@@ -176,7 +187,7 @@ CrossTable(KNNPred, turnoverTestLabels,
 ```{r, cache = TRUE}
 
 set.seed(300)
-grid <- expand.grid(.size = 3, .decay = 0)
+grid <- expand.grid(.size = c(3, 4, 3), .decay = 0)
 
 ANNModel1 <- train(as.factor(turnover) ~ .,
                    method = "nnet",
@@ -233,9 +244,24 @@ CrossTable(SVMPred, turnoverTestLabels,
 ## DT
 
 ```{r, cache = TRUE}
+set.seed(300)
 
-dt_model <- C5.0(as.factor(turnover) ~ ., data = turnoverUS)
+grid <- expand.grid(.model = "tree",
+                    .trials = c(1, 5, 10, 15, 20),
+                    .winnow = "FALSE")
+
+dt_model <- train(as.factor(turnover) ~.,
+                  data = turnoverUS, method = "C5.0",
+                  tuneGrid = grid, metric = "Kappa",
+                  trControl= control)
 dt_predict <- predict(dt_model, turnover)
+
+
+simpledt <- C5.0(as.factor(turnover) ~.,
+                  data = turnoverUS)
+
+simple_predict <- predict(simpledt, turnover)
+
 ```
 ```{r}
 
@@ -245,6 +271,9 @@ CrossTable(dt_predict, turnoverTestLabels,
            dnn = c('Predicted Turnover', 'Actual Turnover'))
 confusionMatrix(as.factor(dt_predict),
                 as.factor(turnoverTestLabels))
+
+confusionMatrix(as.factor(simple_predict),
+                as.factor(turnoverTestLabels))
 ```
 
 # Stack Model
@@ -252,7 +281,7 @@ confusionMatrix(as.factor(dt_predict),
 ## Combine Predictions
 
 ```{r}
-turnover_pred <- data.frame(logPredictionsBinary1, KNNPred, ANNPred, SVMPred, dt_predict, testRegLabels1)
+turnover_pred <- data.frame(logPredictionsBinary1, KNNPred, ANNPred, SVMPred, dt_predict, turnoverTestLabels)
 
 summary(turnover_pred)
 str(turnover_pred)
@@ -276,7 +305,7 @@ str(turnover_stack_test)
 ```{r, cache = TRUE}
 error_cast <- matrix(c(0,1,4,0), nrow=2)
 
-turnover_stack_dt <- C5.0(as.factor(testRegLabels1) ~ .,
+turnover_stack_dt <- C5.0(as.factor(turnoverTestLabels) ~ .,
                           data = turnover_stack_train,
                           costs = error_cast)
 ```
@@ -287,11 +316,11 @@ turnover_stack_model <- predict(turnover_stack_dt, turnover_stack_test)
 
 
 CrossTable(turnover_stack_model,
-           turnover_stack_test$testRegLabels1,
+           turnover_stack_test$turnoverTestLabels,
            prop.chisq = FALSE, prop.c = FALSE,
            prop.r = FALSE,
            dnn = c('Predicted Turnover', 'Actual Turnover'))
 confusionMatrix(as.factor(turnover_stack_model),
-                as.factor(turnover_stack_test$testRegLabels1))
+                as.factor(turnover_stack_test$turnoverTestLabels))
 ```
 
