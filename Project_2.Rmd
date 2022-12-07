@@ -124,13 +124,13 @@ table(pred2)
 ```
 ```{r}
 
-CrossTable(logPredictions1,
-           turnoverTestLabels,
-           prop.chisq = FALSE, prop.c = FALSE,
-           prop.r = FALSE,
-           dnn = c('Predicted Turnover', 'Actual Turnover'))
-confusionMatrix(as.factor(logPredictions1),
-                as.factor(turnoverTestLabels))
+# CrossTable(logPredictions1,
+#            turnoverTestLabels,
+#            prop.chisq = FALSE, prop.c = FALSE,
+#            prop.r = FALSE,
+#            dnn = c('Predicted Turnover', 'Actual Turnover'))
+# confusionMatrix(as.factor(logPredictions1),
+#                 as.factor(turnoverTestLabels))
 
 confusionMatrix(as.factor(pred2),
                 as.factor(turnoverTestLabels), positive = "1")
@@ -175,7 +175,7 @@ CrossTable(KNNPred, turnoverTestLabels,
 
 ## ANN
 
-```{r, cache = TRUE}
+```{r, cache = TRUE} 
 
 set.seed(300)
 grid <- expand.grid(.size = c(3, 4, 3), .decay = 0)
