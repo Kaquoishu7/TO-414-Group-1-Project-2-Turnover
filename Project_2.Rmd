@@ -44,15 +44,6 @@ turnover$is_male = NULL
 turnover$emp_id = NULL
 ```
 
-```{r}
-#logModelInitial =
-#  glm(formula = turnover ~ . + gender * similar_language,
-#               data = turnover,
-#               family = "binomial")
-#logModelInitial =
-#  step(logModelInitial, direction = "backward", trace = 0)
-#summary(logModelInitial)
-```
 # Layer 1 For Stack Model
 
 ## Libraries
@@ -313,6 +304,6 @@ To improve our model, we created a stack model using the predictions from our pr
 The model had 99.93% accuracy and a kappa of 0.9786. The Sensitivity was 0.99 and the false negatives were only 0.01. The false positives were even lower at 0.006.
 
 ## Recommendation
-The data included 34,000 observations from 1,191 employees. 494 of those employees eventually left, leaving the company with a 41.48% turnover rate. The typical IT turnover rate is around 20%. Our research has shown that the average cost of turnover is roughly 30% of the employee;s salary. Using average IT salaries in India (as the company uses data stimulated from an Indian IT company) we found that the average turnover cost per employee is $7,500 US dollars. For this company that makes the total turnover cost $3,705,000. 
+The data included 34,000 observations from 1,191 employees. 494 of those employees eventually left, leaving the company with a 41.48% turnover rate. The typical IT turnover rate is around 20%. Our research has shown that the average cost of turnover is roughly 30% of the employee's salary. Using average IT salaries in India (as the company uses data stimulated from an Indian IT company) we found that the average turnover cost per employee is $7,500 US dollars. For this company that makes the total turnover cost $3,705,000. 
 If they were to use our stacked model, they would be able to correctly predict 98% of leaving employees (484) and then allocate resources to ensure they would stay. Assuming the best case and they manage to keep those 484 employees, they would save $3,630,000. This is possible since spending any amount of money under that savings would result in reduced overall costs and be better than the alternative, not spending money and losing 3.7 million. Even if the company is only able to keep enough employees to get down to the average 20% turnover rate, doing so would still save them $1,845,000. Thus we recommend that they use our model to predict who is leaving and works towards retaining those employees. 
 
