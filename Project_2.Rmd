@@ -98,37 +98,23 @@ logModel1 <- train(as.factor(turnover) ~ . + gender * .,
                         family = "binomial")
 logModel1
 logPredictions1 <- predict(logModel1, newdata = turnover, type = "prob")
-#logPredictions1 <- predict(logModel1, newdata = turnover)
+
 summary(logPredictions1)
 
 pred2 <- ifelse(logPredictions1$`1` >= 0.6, 1, 0)
-#table(pred2)
+
 ```
 ```{r}
 
-<<<<<<< HEAD
-# CrossTable(logPredictions1,
-#            turnoverTestLabels,
-#            prop.chisq = FALSE, prop.c = FALSE,
-#            prop.r = FALSE,
-#            dnn = c('Predicted Turnover', 'Actual Turnover'))
-# confusionMatrix(as.factor(logPredictions1),
-#                 as.factor(turnoverTestLabels))
-=======
 CrossTable(x = pred2,
            y = turnoverTestLabels,
            prop.chisq = FALSE, prop.c = FALSE,
            prop.r = FALSE,
            dnn = c('Predicted Turnover', 'Actual Turnover'))
-#confusionMatrix(as.factor(logPredictions1),
-#                as.factor(turnoverTestLabels))
->>>>>>> c2d443fe418fe0fb639a707b21a6fff7cb0a3013
 
 confusionMatrix(as.factor(pred2),
                as.factor(turnoverTestLabels), positive = "1")
 
-#length(pred2)
-#nrow(turnover)
 ```
 
 
@@ -179,7 +165,7 @@ ANNModel1 <- train(as.factor(turnover) ~ .,
                    trControl = control,
                    tuneGrid = grid,
                    preProcess = c("center", "scale"))
-ANNModel1
+
 ANNPred <- predict(ANNModel1, turnover)
 
 ```
@@ -257,7 +243,7 @@ confusionMatrix(as.factor(dt_predict),
 ## Combine Predictions
 
 ```{r}
-turnover_pred <- data.frame(logPredictionsBinary1, KNNPred, ANNPred, SVMPred, dt_predict, turnoverTestLabels)
+turnover_pred <- data.frame(logPredictions1, KNNPred, ANNPred, SVMPred, dt_predict, turnoverTestLabels)
 
 summary(turnover_pred)
 str(turnover_pred)
@@ -308,23 +294,23 @@ Goal: Predict if an employee will leave or not so the company can work on retain
 We built five individual models to try and predict employee turnover using the simulated data. We then combined the results to create a stacked model in hopes of improving our model and results.
 
 ### Logistic Model
-For the logistic model, we used cross-validation with the `train()` function. We were specifically interested in how gender affects all the other variables, so we included that interaction term. Overall, the logistic model has an accuracy of  92.7% and a Kappa of 0.0669. The model also skews heavily toward negatives.
+For the logistic model, we used cross-validation with the train() function. We were specifically interested in how gender affects all the other variables, so we included that interaction term. Overall, the logistic model has an accuracy of  82.3% and a Kappa of 0.0359. The model also skews heavily toward negatives.
 
 ### KNN Model 
-For the KNN model, we used cross-validation with the train() function. Overall, the KNN model with k= 5 has an accuracy of 96% and a Kappa of 0.9541. The model resulted in 1066 false positives, but 0 false negatives, showing that the model is skewed toward false positives. 
+For the KNN model, we used cross-validation with the train() function. Overall, the KNN model with k= 5 has an accuracy of 96.9% and a Kappa of 0.4697. The model resulted in 1066 false positives, but 0 false negatives, showing that the model is skewed toward false positives. 
 
 ### ANN Model
-For the ANN model, we once again used a 10-fold cross-validation with the train() function. When run on our data, the model had 79% accuracy with a 0.0205 Kappa. The kappa here was much worse than any of our other models. The accuracy was not the worst, but we had numerous models with over 90% accuracy that would be preferred to use over this. The model had 1% false negatives and 20% false positives. This model was, similar to the logistic model, skewed towards false positives.
+For the ANN model, we once again used a 10-fold cross-validation with the train() function. When run on our data, the model had 62.3% accuracy with a 0.0205 Kappa. The kappa here was much worse than any of our other models. The accuracy was not the worst, but we had numerous models with over 90% accuracy that would be preferred to use over this. The model had 1% false negatives and 20% false positives. This model was, similar to the logistic model, skewed towards false positives.
 
 ### SVM Model
-For the SVM model, we used 10-fold cross-validation with the train() function. Overall, the SVM model has an accuracy of 98.44% and a Kappa of 64.13%. The model resulted in 536 false positives, but 0 false negatives, showing that the model is skewed toward false positives. 
+For the SVM model, we used 10-fold cross-validation with the train() function. Overall, the SVM model has an accuracy of 98.44% and a Kappa of 0.6413. The model resulted in 536 false positives, but 0 false negatives, showing that the model is skewed toward false positives. 
 
 ###Decision Tree
-For the decision tree, we also used a 10-fold cross-validation with the train() function. The model was extremely accurate with 99.99% accuracy and 99.59% Kappa. Furthermore, the model produced no false negatives and 4 false positives. In the context of employee turnover, this is encouraging since false negatives are worse than false positives. For these reasons, the decision tree proved to be our best preliminary model.
+For the decision tree, we also used a 10-fold cross-validation with the train() function. The model was extremely accurate with 99.95% accuracy and .9828 Kappa. Furthermore, the model produced no false negatives and 4 false positives. In the context of employee turnover, this is encouraging since false negatives are worse than false positives. For these reasons, the decision tree proved to be our best preliminary model.
 
 ### Stacked Model
 To improve our model, we created a stack model using the predictions from our previous five models as data points. The data frame had 17226 observations. This time we did not use cross-validation, but instead did a 70:30 test/train split. This was to ensure we did not overfit the data. We then used the c5.0 function to create a decision tree. We also used an error cost matrix to try and improve our false reports, primarily focusing on lowering false negatives as a false negative means wasting resources trying to keep employees who were not tending to leave. 
-The model had 98% accuracy and a kappa of 0.0796. The Sensitivity was 0.99 and the false negatives were only 0.01. The false positives were even lower at 0.006.
+The model had 99.93% accuracy and a kappa of 0.9786. The Sensitivity was 0.99 and the false negatives were only 0.01. The false positives were even lower at 0.006.
 
 ## Recommendation
 The data included 34,000 observations from 1,191 employees. 494 of those employees eventually left, leaving the company with a 41.48% turnover rate. The typical IT turnover rate is around 20%. Our research has shown that the average cost of turnover is roughly 30% of the employee;s salary. Using average IT salaries in India (as the company uses data stimulated from an Indian IT company) we found that the average turnover cost per employee is $7,500 US dollars. For this company that makes the total turnover cost $3,705,000. 
